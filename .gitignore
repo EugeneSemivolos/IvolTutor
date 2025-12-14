@@ -38,7 +38,9 @@ frontend/.eslintcache
 # --- Docker ---
 # Ігноруємо локальні дані бази, якщо вони в папці проєкту
 postgres_data/
+pg_data/
 
 # --- User Uploads (Файли користувачів) ---
 # Ми хочемо мати папку uploads, але не хочемо заливати чужі ДЗ на GitHub
+backend/uploads/*
 !backend/uploads/.gitkeep
