@@ -1,38 +1,63 @@
-/* 1. Підключаємо Tailwind (обов'язково на початку) */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* 2. Налаштування змінних для кольорів (щоб Календар міг змінювати колір) */
 :root {
-  /* Світла тема (за замовчуванням) */
+  --navbar-height: 73px;
+  
+  /* Кольори (Світла тема) */
   --cal-bg: #ffffff;
-  --cal-text: #1f2937;       /* Gray-900 */
-  --cal-border: #e5e7eb;     /* Gray-200 */
-  --cal-slot-line: #f3f4f6;  /* Gray-100 */
-  --cal-time-text: #9ca3af;  /* Gray-400 */
+  --cal-text: #1f2937;       /* gray-900 */
+  --cal-border: #e5e7eb;     /* gray-200 */
+  --cal-slot-line: #f3f4f6;  /* gray-100 */
+  --cal-time-text: #9ca3af;  /* gray-400 */
 }
 
-/* Темна тема (вмикається класом .dark) */
+@media (max-width: 640px) {
+  :root {
+    --navbar-height: 65px;
+  }
+}
+
+/* Темна тема */
 .dark {
-  --cal-bg: #111827;         /* Gray-900 */
-  --cal-text: #f3f4f6;       /* Gray-100 */
-  --cal-border: #374151;     /* Gray-700 */
-  --cal-slot-line: #1f2937;  /* Gray-800 */
-  --cal-time-text: #9ca3af;  /* Gray-400 */
+  --cal-bg: #111827;         /* gray-900 */
+  --cal-text: #f3f4f6;       /* gray-100 */
+  --cal-border: #374151;     /* gray-700 */
+  --cal-slot-line: #1f2937;  /* gray-800 */
+  --cal-time-text: #9ca3af;  /* gray-400 */
 }
 
-/* 3. Базові налаштування сторінки */
+html {
+  overflow-x: hidden;
+  width: 100%;
+}
+
 body {
   margin: 0;
+  padding: 0;
   min-width: 320px;
   min-height: 100vh;
-  /* Плавна зміна кольору фону при перемиканні теми */
-  transition: background-color 0.3s, color 0.3s;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  
+  /* Фон сторінки синхронізований з календарем */
+  background-color: var(--cal-bg);
+  color: var(--cal-text);
+  
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* 4. Застосовуємо змінні до Календаря */
-/* Це дозволяє нам змінювати кольори FullCalendar через CSS змінні */
+*, *::before, *::after {
+  box-sizing: border-box;
+  /* Плавна зміна кольорів для всіх елементів */
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
+}
+
+/* --- Стилізація FullCalendar --- */
 .fc {
   --fc-border-color: var(--cal-border);
   --fc-page-bg-color: var(--cal-bg);
@@ -40,39 +65,33 @@ body {
   
   background-color: var(--cal-bg);
   color: var(--cal-text);
+  position: relative;
+  z-index: 1;
 }
 
-/* Колір заголовків (ПН, ВТ...) */
-.fc-col-header-cell-cushion {
-  color: var(--cal-time-text);
+.fc-col-header-cell-cushion { color: var(--cal-time-text); }
+.fc-timegrid-slot { border-bottom: 1px solid var(--cal-slot-line) !important; }
+.fc-timegrid-axis-cushion, .fc-timegrid-slot-label-cushion { color: var(--cal-time-text); }
+.fc-toolbar-title { color: var(--cal-text) !important; }
+
+/*Стилізація */
+.fc .fc-button-primary {
+  background-color: var(--cal-bg) !important;       /* Білий у світлій, Темний у темній */
+  border-color: var(--cal-border) !important;       /* Сіра рамка */
+  color: var(--cal-text) !important;                /* Темний текст у світлій, Світлий у темній */
+  box-shadow: none !important;                      /* Прибираємо стандартні тіні */
 }
 
-/* Лінії сітки */
-.fc-timegrid-slot {
-  border-bottom: 1px solid var(--cal-slot-line) !important;
-}
-
-/* Години зліва (08:00, 09:00) */
-.fc-timegrid-axis-cushion,
-.fc-timegrid-slot-label-cushion {
-  color: var(--cal-time-text);
-}
-
-/* Заголовок календаря */
-.fc-toolbar-title {
+/* Стан при наведенні та активний (натиснутий) */
+.fc .fc-button-primary:hover,
+.fc .fc-button-primary:active,
+.fc .fc-button-active {
+  background-color: var(--cal-slot-line) !important; /* Трохи темніший фон (сірий) при наведенні */
+  border-color: var(--cal-border) !important;
   color: var(--cal-text) !important;
 }
 
-/* Кнопки календаря в темній темі (перевизначення стилів) */
-.dark .fc-button-primary {
-  background-color: #1f2937 !important;
-  border-color: #374151 !important;
-  color: #e5e7eb !important;
-}
-.dark .fc-button-primary:hover {
-  background-color: #374151 !important;
-}
-.dark .fc-button-active {
-  background-color: #374151 !important;
-  color: white !important;
+/* Вимикаємо синю обводку при фокусі */
+.fc .fc-button-primary:focus {
+  box-shadow: 0 0 0 2px var(--cal-border) !important;
 }
