@@ -6,26 +6,34 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(249, 250, 251, 0.95) 100%);
+  
+  /* ВИПРАВЛЕННЯ: Замість градієнта використовуємо background-color */
+  background-color: rgba(255, 255, 255, 0.85); /* Світлий напівпрозорий */
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+  
   border-bottom: 1px solid rgba(229, 231, 235, 0.8);
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+  
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: 1000;
-  transition: all 0.3s ease;
+  
+  /* Додаємо transition для всіх властивостей, що змінюються */
+  transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  
   box-sizing: border-box;
   overflow: visible;
   height: var(--navbar-height);
 }
 
 .dark .navbar-container {
-  background: linear-gradient(135deg, rgba(17, 24, 39, 0.95) 0%, rgba(31, 41, 55, 0.95) 100%);
+  /* ВИПРАВЛЕННЯ: Темний напівпрозорий колір замість градієнта */
+  background-color: rgba(17, 24, 39, 0.85); /* gray-900 з прозорістю */
   border-bottom-color: rgba(55, 65, 81, 0.8);
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3), 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
 }
 
 /* Left Section */
@@ -50,11 +58,14 @@
   border: 1.5px solid rgba(156, 163, 175, 0.3);
   border-radius: 0.75rem;
   cursor: pointer;
+  
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
   position: relative;
   overflow: hidden;
 }
 
+/* Ефект при наведенні (залишаємо як є, бо тут transition opacity працює добре) */
 .hamburger-menu::before {
   content: '';
   position: absolute;
@@ -66,7 +77,6 @@
 
 .hamburger-menu:hover {
   border-color: rgba(59, 130, 246, 0.5);
-  background: rgba(59, 130, 246, 0.05);
   transform: scale(1.05);
 }
 
@@ -80,31 +90,33 @@
 
 .dark .hamburger-menu:hover {
   border-color: rgba(96, 165, 250, 0.5);
-  background: rgba(59, 130, 246, 0.1);
 }
 
+/* ВИПРАВЛЕННЯ ЛІНІЙ ГАМБУРГЕРА: 
+   Градієнт на лініях теж не анімується плавно. 
+   Замінимо на background-color для плавності.
+*/
 .hamburger-line {
   width: 100%;
   height: 2.5px;
-  background: linear-gradient(90deg, #3b82f6 0%, #9333ea 100%);
+  background-color: #4f46e5; /* indigo-600 */
   border-radius: 2px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   transform-origin: center;
 }
 
 .dark .hamburger-line {
-  background: linear-gradient(90deg, #60a5fa 0%, #a78bfa 100%);
+  background-color: #818cf8; /* indigo-400 */
 }
 
+/* Анімація гамбургера в хрестик */
 .hamburger-menu.active .hamburger-line:nth-child(1) {
   transform: translateY(7px) rotate(45deg);
 }
-
 .hamburger-menu.active .hamburger-line:nth-child(2) {
   opacity: 0;
   transform: scaleX(0);
 }
-
 .hamburger-menu.active .hamburger-line:nth-child(3) {
   transform: translateY(-7px) rotate(-45deg);
 }
@@ -123,12 +135,14 @@
   overflow: hidden;
   text-overflow: ellipsis;
   min-width: 0;
+  transition: color 0.3s ease; /* Додаємо плавність для тексту */
 }
 
 .dark .navbar-title {
   color: #f3f4f6;
 }
 
+/* Градієнт тексту (залишаємо, бо він не змінюється при темі, або змінюється непомітно) */
 .navbar-title-gradient {
   background: linear-gradient(135deg, #3b82f6 0%, #9333ea 100%);
   -webkit-background-clip: text;
@@ -162,13 +176,14 @@
   width: 2.75rem;
   height: 2.75rem;
   border-radius: 50%;
+  /* Цей градієнт не змінюється при зміні теми, тому тут все ок */
   background: linear-gradient(135deg, #3b82f6 0%, #9333ea 100%);
   color: white;
   font-size: 1rem;
   font-weight: 700;
   border: none;
   cursor: pointer;
-  box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3), 0 2px 4px -1px rgba(59, 130, 246, 0.2);
+  box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
@@ -185,7 +200,7 @@
 
 .account-button:hover {
   transform: translateY(-2px) scale(1.05);
-  box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.4), 0 4px 6px -2px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.4);
 }
 
 .account-button:hover::before {
@@ -202,16 +217,14 @@
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
-/* Responsive adjustments */
+/* Responsive */
 @media (max-width: 640px) {
   .navbar-container {
     padding: 0.875rem 1rem;
   }
-
   .navbar-title {
     font-size: 1.25rem;
   }
-
   .hamburger-menu {
     width: 2.25rem;
     height: 2.25rem;

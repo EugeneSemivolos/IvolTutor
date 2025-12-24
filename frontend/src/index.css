@@ -1,37 +1,36 @@
-/* 1. Підключаємо Tailwind (обов'язково на початку) */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* 2. Налаштування змінних для кольорів (щоб Календар міг змінювати колір) */
+/* --- 1. Змінні та Теми --- */
 :root {
-  /* Світла тема (за замовчуванням) */
-  --cal-bg: #ffffff;
-  --cal-text: #1f2937;       /* Gray-900 */
-  --cal-border: #e5e7eb;     /* Gray-200 */
-  --cal-slot-line: #f3f4f6;  /* Gray-100 */
-  --cal-time-text: #9ca3af;  /* Gray-400 */
-  /* Висота navbar */
+  /* Розміри */
   --navbar-height: 73px;
+
+  /* Кольори (Світла тема) */
+  --cal-bg: #ffffff;
+  --cal-text: #1f2937;       /* gray-900 */
+  --cal-border: #e5e7eb;     /* gray-200 */
+  --cal-slot-line: #f3f4f6;  /* gray-100 */
+  --cal-time-text: #9ca3af;  /* gray-400 */
 }
 
-/* Адаптивна висота navbar для мобільних */
+/* Адаптивність для мобільних */
 @media (max-width: 640px) {
   :root {
     --navbar-height: 65px;
   }
 }
 
-/* Темна тема (вмикається класом .dark) */
+/* Темна тема */
 .dark {
-  --cal-bg: #111827;         /* Gray-900 */
-  --cal-text: #f3f4f6;       /* Gray-100 */
-  --cal-border: #374151;     /* Gray-700 */
-  --cal-slot-line: #1f2937;  /* Gray-800 */
-  --cal-time-text: #9ca3af;  /* Gray-400 */
+  --cal-bg: #111827;         /* gray-900 */
+  --cal-text: #f3f4f6;       /* gray-100 */
+  --cal-border: #374151;     /* gray-700 */
+  --cal-slot-line: #1f2937;  /* gray-800 */
 }
 
-/* 3. Базові налаштування сторінки */
+/* --- 2. Глобальні налаштування --- */
 html {
   overflow-x: hidden;
   width: 100%;
@@ -45,31 +44,49 @@ body {
   width: 100%;
   max-width: 100%;
   overflow-x: hidden;
-  box-sizing: border-box;
-  /* Плавна зміна кольору фону при перемиканні теми */
-  transition: background-color 0.3s, color 0.3s;
+  
+  background-color: var(--cal-bg); /* Фон береться зі змінної календаря */
+  color: var(--cal-text);          /* Колір тексту теж */
+  
+  /* Плавний перехід для всього тіла сторінки */
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 *, *::before, *::after {
   box-sizing: border-box;
+  /* Додаємо плавність зміни кольорів для всіх елементів */
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
 }
 
-/* 4. Застосовуємо змінні до Календаря */
-/* Це дозволяє нам змінювати кольори FullCalendar через CSS змінні */
+/* --- 3. Стилізація FullCalendar --- */
 .fc {
-  --fc-border-color: var(--cal-border);
+  /* Перевизначаємо внутрішні змінні FullCalendar нашими */
   --fc-page-bg-color: var(--cal-bg);
   --fc-neutral-bg-color: var(--cal-bg);
+  --fc-border-color: var(--cal-border);
   
+  /* Основні кольори */
   background-color: var(--cal-bg);
   color: var(--cal-text);
+  
+  /* Позиціонування */
   position: relative;
-  z-index: 1; /* Календар має бути нижче за Navbar */
+  z-index: 1; 
 }
 
-/* Колір заголовків (ПН, ВТ...) */
-.fc-col-header-cell-cushion {
-  color: var(--cal-time-text);
+/* Сірі кольори для часу та заголовків (групування селекторів) */
+.fc-col-header-cell-cushion,
+.fc-timegrid-axis-cushion,
+.fc-timegrid-slot-label-cushion {
+  color: var(--cal-time-text) !important;
+  text-decoration: none !important; /* Прибираємо підкреслення дат */
+}
+
+/* Заголовок календаря (Місяць/Рік) */
+.fc-toolbar-title {
+  color: var(--cal-text) !important;
 }
 
 /* Лінії сітки */
@@ -77,27 +94,19 @@ body {
   border-bottom: 1px solid var(--cal-slot-line) !important;
 }
 
-/* Години зліва (08:00, 09:00) */
-.fc-timegrid-axis-cushion,
-.fc-timegrid-slot-label-cushion {
-  color: var(--cal-time-text);
-}
-
-/* Заголовок календаря */
-.fc-toolbar-title {
-  color: var(--cal-text) !important;
-}
-
-/* Кнопки календаря в темній темі (перевизначення стилів) */
+/* --- 4. Кнопки календаря (Темна тема) --- */
 .dark .fc-button-primary {
   background-color: #1f2937 !important;
   border-color: #374151 !important;
   color: #e5e7eb !important;
 }
-.dark .fc-button-primary:hover {
-  background-color: #374151 !important;
-}
+
+.dark .fc-button-primary:hover,
 .dark .fc-button-active {
   background-color: #374151 !important;
-  color: white !important;
+  border-color: #4b5563 !important;
+}
+
+.dark .fc-button-active {
+  color: #ffffff !important;
 }
