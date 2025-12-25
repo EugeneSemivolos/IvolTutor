@@ -9,7 +9,6 @@ export default function Navbar() {
     <header className="navbar-container">
       {/* Ліва частина: гамбургер + назва */}
       <div className="navbar-left">
-        {/* Кнопка гамбургер-меню */}
         <button
           type="button"
           className={`hamburger-menu ${isMenuOpen ? 'active' : ''}`}
@@ -22,27 +21,51 @@ export default function Navbar() {
           <span className="hamburger-line"></span>
         </button>
 
-        {/* Назва */}
         <h1 className="navbar-title">
           <span className="navbar-title-gradient">Tutor</span> CRM
         </h1>
       </div>
 
-      {/* Права частина: перемикач теми + акаунт */}
+      {/* Права частина */}
       <div className="navbar-right">
         <ThemeToggle />
-
-        {/* Кнопка акаунта */}
-        <button
-          type="button"
-          className="account-button"
-          aria-label="Account menu"
-        >
+        <button type="button" className="account-button" aria-label="Account menu">
           <span className="account-initial">A</span>
         </button>
       </div>
+
+      {/* --- ВИПАДАЮЧЕ МЕНЮ --- */}
+      <div className={`mobile-menu ${isMenuOpen ? 'open' : ''}`}>
+        <nav className="mobile-menu-nav">
+          
+          {/* ГРУПА 1: Основне меню (Зверху) */}
+          <div className="menu-group-top">
+            <div className="menu-item">
+              <span className="menu-icon">📅</span> Календар
+            </div>
+            <div className="menu-item">
+              <span className="menu-icon">📓</span> Журнал
+            </div>
+            <div className="menu-item">
+              <span className="menu-icon">👥</span> Студенти
+            </div>
+          </div>
+
+          {/* ГРУПА 2: Службове меню (Внизу) */}
+          <div className="menu-group-bottom">
+            <div className="menu-separator"></div>
+            
+            <div className="menu-item">
+              <span className="menu-icon">⚙️</span> Налаштування
+            </div>
+            <div className="menu-item">
+              <span className="menu-icon">❓</span> Допомога
+            </div>
+          </div>
+
+        </nav>
+      </div>
+
     </header>
   );
 }
-
-

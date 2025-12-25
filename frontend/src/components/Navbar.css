@@ -230,3 +230,188 @@
     padding: 0.5rem;
   }
 }
+
+/* --- MOBILE MENU STYLES (Додати в кінець файлу) --- */
+
+.mobile-menu {
+  position: absolute;
+  top: 100%; /* Меню починається відразу під навбаром */
+  left: 0;
+  width: 100%;
+  
+  /* Стиль скла (як у навбара) */
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  
+  border-bottom: 1px solid rgba(229, 231, 235, 0.8);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  
+  /* Анімація появи */
+  opacity: 0;
+  transform: translateY(-20px);
+  pointer-events: none; /* Щоб не можна було клікнути, коли приховано */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 999;
+}
+
+/* Коли меню відкрите */
+.mobile-menu.open {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* Темна тема для меню */
+.dark .mobile-menu {
+  background-color: rgba(17, 24, 39, 0.95);
+  border-bottom-color: rgba(75, 85, 99, 0.8);
+}
+
+/* Внутрішній контейнер */
+.mobile-menu-nav {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* Пункти меню */
+.menu-item {
+  padding: 12px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  color: #374151;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: background-color 0.2s;
+}
+
+.menu-item:hover {
+  background-color: rgba(243, 244, 246, 1); /* Світло-сірий при наведенні */
+}
+
+/* Темна тема пунктів */
+.dark .menu-item {
+  color: #e5e7eb;
+}
+
+.dark .menu-item:hover {
+  background-color: rgba(55, 65, 81, 0.6);
+}
+
+.menu-icon {
+  font-size: 1.2rem;
+}
+
+/* Розділювач */
+.menu-separator {
+  height: 1px;
+  background-color: rgba(229, 231, 235, 0.8);
+  margin: 4px 0;
+}
+
+.dark .menu-separator {
+  background-color: rgba(75, 85, 99, 0.8);
+}
+/* --- MOBILE MENU STYLES --- */
+
+.mobile-menu {
+  position: absolute;
+  top: 100%; 
+  left: 0;
+  width: 100%;
+  
+  /* ВАЖЛИВО: Робимо меню висотою на весь екран мінус висота шапки */
+  height: calc(100vh - var(--navbar-height, 73px));
+  
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  
+  border-bottom: 1px solid rgba(229, 231, 235, 0.8);
+  
+  opacity: 0;
+  transform: translateX(-20px); /* Виїжджає трохи збоку, так красивіше */
+  pointer-events: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 999;
+}
+
+.mobile-menu.open {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+.dark .mobile-menu {
+  background-color: rgba(17, 24, 39, 0.95);
+  border-bottom-color: rgba(75, 85, 99, 0.8);
+}
+
+/* Внутрішній контейнер */
+.mobile-menu-nav {
+  height: 100%; /* Розтягуємо на всю висоту батька */
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* ЦЯ МАГІЯ розкидує верх і низ */
+}
+
+/* Верхня група (щоб елементи йшли щільно) */
+.menu-group-top {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* Нижня група */
+.menu-group-bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-bottom: 2rem; /* Відступ від самого низу екрана */
+}
+
+/* Стилі пунктів */
+.menu-item {
+  padding: 12px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  color: #374151;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: background-color 0.2s;
+}
+
+.menu-item:hover {
+  background-color: rgba(243, 244, 246, 1);
+}
+
+.dark .menu-item {
+  color: #e5e7eb;
+}
+
+.dark .menu-item:hover {
+  background-color: rgba(55, 65, 81, 0.6);
+}
+
+.menu-icon {
+  font-size: 1.2rem;
+  width: 24px; /* Фіксуємо ширину іконки, щоб текст був рівно */
+  text-align: center;
+}
+
+.menu-separator {
+  height: 1px;
+  background-color: rgba(229, 231, 235, 0.8);
+  margin: 8px 0;
+}
+
+.dark .menu-separator {
+  background-color: rgba(75, 85, 99, 0.8);
+}
