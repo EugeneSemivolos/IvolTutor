@@ -16,8 +16,9 @@
 
 # # backend/src/main.py
 # from fastapi import FastAPI, Depends, HTTPException
-#     FastAPI - основний клас для створення веб-додатку, сутність
-#     Depends - 
+#     FastAPI - основний клас для створення веб-додатку
+створює сайт: потрібно запустити сервер і зайти на http://localhost:8000/docs
+#     Depends - впровадження залежностей
 # from fastapi.middleware.cors import CORSMiddleware
 # from sqlmodel import Session, select
 # from typing import List
