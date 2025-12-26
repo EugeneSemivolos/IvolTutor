@@ -1,10 +1,10 @@
-.navbar-container {
+.container {
   width: 100%;
   max-width: 100%;
   padding: 1rem 1.5rem;
   display: flex;
   
-  background-color: rgba(255, 255, 255, 0.85); /* Світлий напівпрозорий */
+  background-color: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   
@@ -17,7 +17,6 @@
   right: 0;
   z-index: 1000;
   
-  /* Додаємо transition для всіх властивостей, що змінюються */
   transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
   
   box-sizing: border-box;
@@ -25,15 +24,14 @@
   height: var(--navbar-height);
 }
 
-.dark .navbar-container {
-  /* ВИПРАВЛЕННЯ: Темний напівпрозорий колір замість градієнта */
-  background-color: rgba(17, 24, 39, 0.85); /* gray-900 з прозорістю */
+:global(.dark) .container {
+  background-color: rgba(17, 24, 39, 0.85);
   border-bottom-color: rgba(55, 65, 81, 0.8);
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
 }
 
 /* Left Section */
-.navbar-left {
+.left {
   display: flex;
   align-items: center;
   gap: 1rem;
@@ -43,7 +41,7 @@
 }
 
 /* Hamburger Menu Button */
-.hamburger-menu {
+.hamburger_menu {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -61,8 +59,7 @@
   overflow: hidden;
 }
 
-/* Ефект при наведенні (залишаємо як є, бо тут transition opacity працює добре) */
-.hamburger-menu::before {
+.hamburger_menu::before {
   content: '';
   position: absolute;
   inset: 0;
@@ -71,28 +68,24 @@
   transition: opacity 0.3s ease;
 }
 
-.hamburger-menu:hover {
+.hamburger_menu:hover {
   border-color: rgba(59, 130, 246, 0.5);
   transform: scale(1.05);
 }
 
-.hamburger-menu:hover::before {
+.hamburger_menu:hover::before {
   opacity: 1;
 }
 
-.dark .hamburger-menu {
+:global(.dark) .hamburger_menu {
   border-color: rgba(75, 85, 99, 0.5);
 }
 
-.dark .hamburger-menu:hover {
+:global(.dark) .hamburger_menu:hover {
   border-color: rgba(96, 165, 250, 0.5);
 }
 
-/* ВИПРАВЛЕННЯ ЛІНІЙ ГАМБУРГЕРА: 
-   Градієнт на лініях теж не анімується плавно. 
-   Замінимо на background-color для плавності.
-*/
-.hamburger-line {
+.hamburger_line {
   width: 100%;
   height: 2.5px;
   background-color: #4f46e5; /* indigo-600 */
@@ -101,24 +94,24 @@
   transform-origin: center;
 }
 
-.dark .hamburger-line {
+:global(.dark) .hamburger_line {
   background-color: #818cf8; /* indigo-400 */
 }
 
 /* Анімація гамбургера в хрестик */
-.hamburger-menu.active .hamburger-line:nth-child(1) {
+.hamburger_menu.active .hamburger_line:nth-child(1) {
   transform: translateY(7px) rotate(45deg);
 }
-.hamburger-menu.active .hamburger-line:nth-child(2) {
+.hamburger_menu.active .hamburger_line:nth-child(2) {
   opacity: 0;
   transform: scaleX(0);
 }
-.hamburger-menu.active .hamburger-line:nth-child(3) {
+.hamburger_menu.active .hamburger_line:nth-child(3) {
   transform: translateY(-7px) rotate(-45deg);
 }
 
 /* Navbar Title */
-.navbar-title {
+.title {
   font-size: 1.5rem;
   font-weight: 700;
   letter-spacing: -0.025em;
@@ -131,24 +124,23 @@
   overflow: hidden;
   text-overflow: ellipsis;
   min-width: 0;
-  transition: color 0.3s ease; /* Додаємо плавність для тексту */
+  transition: color 0.3s ease;
 }
 
-.dark .navbar-title {
+:global(.dark) .title {
   color: #f3f4f6;
 }
 
-/* Градієнт тексту (залишаємо, бо він не змінюється при темі, або змінюється непомітно) */
-.navbar-title-gradient {
+.title_gradient {
   background: linear-gradient(135deg, #3b82f6 0%, #9333ea 100%);
   -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
   background-clip: text;
+  -webkit-text-fill-color: transparent;
   font-weight: 800;
 }
 
 /* Right Section */
-.navbar-right {
+.right {
   display: flex;
   align-items: center;
   gap: 1rem;
@@ -159,20 +151,19 @@
 }
 
 @media (min-width: 640px) {
-  .navbar-right {
+  .right {
     gap: 1.25rem;
   }
 }
 
 /* Account Button */
-.account-button {
+.account_button {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 2.75rem;
   height: 2.75rem;
   border-radius: 50%;
-  /* Цей градієнт не змінюється при зміні теми, тому тут все ок */
   background: linear-gradient(135deg, #3b82f6 0%, #9333ea 100%);
   color: white;
   font-size: 1rem;
@@ -185,7 +176,7 @@
   overflow: hidden;
 }
 
-.account-button::before {
+.account_button::before {
   content: '';
   position: absolute;
   inset: 0;
@@ -194,20 +185,20 @@
   transition: opacity 0.3s ease;
 }
 
-.account-button:hover {
+.account_button:hover {
   transform: translateY(-2px) scale(1.05);
   box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.4);
 }
 
-.account-button:hover::before {
+.account_button:hover::before {
   opacity: 1;
 }
 
-.account-button:active {
+.account_button:active {
   transform: translateY(0) scale(0.98);
 }
 
-.account-initial {
+.account_initial {
   position: relative;
   z-index: 1;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
@@ -215,150 +206,79 @@
 
 /* Responsive */
 @media (max-width: 640px) {
-  .navbar-container {
+  .navbar_container {
     padding: 0.875rem 1rem;
   }
-  .navbar-title {
+  .navbar_title {
     font-size: 1.25rem;
   }
-  .hamburger-menu {
+  .hamburger_menu {
     width: 2.25rem;
     height: 2.25rem;
     padding: 0.5rem;
   }
 }
 
-/* --- MOBILE MENU STYLES (Додати в кінець файлу) --- */
-
-
-
-/* Коли меню відкрите */
-.mobile-menu.open {
-  opacity: 1;
-  transform: translateY(0);
-  pointer-events: auto;
-}
-
-/* Темна тема для меню */
-.dark .mobile-menu {
-  background-color: rgba(17, 24, 39, 0.95);
-  border-bottom-color: rgba(75, 85, 99, 0.8);
-}
-
-/* Внутрішній контейнер */
-.mobile-menu-nav {
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-/* Пункти меню */
-.menu-item {
-  padding: 12px 16px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 500;
-  color: #374151;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  transition: background-color 0.2s;
-}
-
-.menu-item:hover {
-  background-color: rgba(243, 244, 246, 1); /* Світло-сірий при наведенні */
-}
-
-/* Темна тема пунктів */
-.dark .menu-item {
-  color: #e5e7eb;
-}
-
-.dark .menu-item:hover {
-  background-color: rgba(55, 65, 81, 0.6);
-}
-
-.menu-icon {
-  font-size: 1.2rem;
-}
-
-/* Розділювач */
-.menu-separator {
-  height: 1px;
-  background-color: rgba(229, 231, 235, 0.8);
-  margin: 4px 0;
-}
-
-.dark .menu-separator {
-  background-color: rgba(75, 85, 99, 0.8);
-}
 /* --- MOBILE MENU STYLES --- */
-.mobile-menu {
-  position: fixed; /* Фіксуємо відносно вікна браузера, а не шапки */
-  top: var(--navbar-height, 73px); /* Відступ зверху = висоті шапки */
+
+.mobile_menu {
+  position: fixed;
+  top: var(--navbar-height, 73px);
   left: 0;
-  width: 25%;
+  width: 25%; /* Примітка: для мобільних зазвичай 100%, перевірте це значення */
   
-  /* Висота = весь екран мінус висота шапки */
   height: calc(100vh - var(--navbar-height, 73px));
-  /* Для мобільних (щоб не ховалося за адресним рядком) використовуємо dvh */
   height: calc(100dvh - var(--navbar-height, 73px)); 
 
-  background-color: rgba(255, 255, 255, 0.98); /* Трохи менше прозорості для читабельності */
+  background-color: rgba(255, 255, 255, 0.98);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   
   border-bottom: 1px solid rgba(229, 231, 235, 0.8);
   
-  /* Анімація */
   transition: opacity 0.3s ease, transform 0.3s ease;
   opacity: 0;
   transform: translateY(-10px);
   pointer-events: none;
-  z-index: 998; /* Трохи нижче за саму шапку (у якої зазвичай 1000) */
+  z-index: 998;
   
-  overflow-y: auto; /* Дозволяє скролити меню, якщо пунктів багато */
+  overflow-y: auto;
 }
 
-/* Коли меню відкрите */
-.mobile-menu.open {
+.mobile_menu.open {
   opacity: 1;
   transform: translateY(0);
   pointer-events: auto;
 }
 
-.dark .mobile-menu {
+:global(.dark) .mobile_menu {
   background-color: rgba(17, 24, 39, 0.95);
   border-bottom-color: rgba(75, 85, 99, 0.8);
 }
 
 /* Внутрішній контейнер */
-.mobile-menu-nav {
-  height: 100%; /* Розтягуємо на всю висоту батька */
+.mobile_menu_nav {
+  height: 100%;
   padding: 1rem;
   display: flex;
   flex-direction: column;
-  justify-content: space-between; /* ЦЯ МАГІЯ розкидує верх і низ */
+  justify-content: space-between;
 }
 
-/* Верхня група (щоб елементи йшли щільно) */
-.menu-group-top {
+/* Групи меню */
+.menu_group_top,
+.menu_group_bottom {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
 
-/* Нижня група */
-.menu-group-bottom {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  padding-bottom: 2rem; /* Відступ від самого низу екрана */
+.menu_group_bottom {
+  padding-bottom: 2rem;
 }
 
 /* Стилі пунктів */
-.menu-item {
+.menu_item {
   padding: 12px 16px;
   border-radius: 8px;
   cursor: pointer;
@@ -370,51 +290,50 @@
   transition: background-color 0.2s;
 }
 
-.menu-item:hover {
+.menu_item:hover {
   background-color: rgba(243, 244, 246, 1);
 }
 
-.dark .menu-item {
+:global(.dark) .menu_item {
   color: #e5e7eb;
 }
 
-.dark .menu-item:hover {
+:global(.dark) .menu_item:hover {
   background-color: rgba(55, 65, 81, 0.6);
 }
 
-.menu-icon {
+.menu_icon {
   font-size: 1.2rem;
-  width: 24px; /* Фіксуємо ширину іконки, щоб текст був рівно */
+  width: 24px;
   text-align: center;
 }
 
-.menu-separator {
+.menu_separator {
   height: 1px;
   background-color: rgba(229, 231, 235, 0.8);
   margin: 8px 0;
 }
 
-.dark .menu-separator {
+:global(.dark) .menu_separator {
   background-color: rgba(75, 85, 99, 0.8);
 }
 
-/* Накладання на весь екран */
-.help-modal-overlay {
+/* --- HELP MODAL --- */
+.help_modal_overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(255, 255, 255, 1); /* Суцільний фон, бо HelpPage має свій фон */
-  z-index: 2000; /* Має бути вище за навбар */
+  background-color: rgba(255, 255, 255, 1);
+  z-index: 2000;
   display: flex;
   justify-content: center;
   align-items: center;
   animation: fadeIn 0.3s ease;
 }
 
-/* Кнопка закриття */
-.close-help-button {
+.close_help_button {
   position: absolute;
   top: 20px;
   right: 20px;
@@ -425,7 +344,7 @@
   height: 40px;
   border-radius: 50%;
   cursor: pointer;
-  z-index: 2001; /* Вище ніж оверлей */
+  z-index: 2001;
   color: #374151;
   display: flex;
   align-items: center;
@@ -433,11 +352,10 @@
   transition: background 0.2s;
 }
 
-.close-help-button:hover {
+.close_help_button:hover {
   background: #d1d5db;
 }
 
-/* Анімація появи */
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }

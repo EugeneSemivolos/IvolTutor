@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import ThemeToggle from './ThemeToggle';
-import HelpPage from './HelpPage'; // !!! 1. Імпортуємо компонент (переконайтеся, що файл називається Help.jsx)
-import './Navbar.css';
+import HelpPage from './HelpPage';
+import styles from './Navbar.module.css';
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -15,87 +15,79 @@ export default function Navbar() {
 
   return (
     <>
-      <header className="navbar-container">
+      <header className={styles.container}>
         {/* Ліва частина: гамбургер + назва */}
-        <div className="navbar-left">
+        <div className={styles.left}>
           <button
             type="button"
-            className={`hamburger-menu ${isMenuOpen ? 'active' : ''}`}
+            className={`${styles.hamburger_menu} ${isMenuOpen ? styles.active : ''}`}
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             aria-label="Open menu"
             aria-expanded={isMenuOpen}
           >
-            <span className="hamburger-line"></span>
-            <span className="hamburger-line"></span>
-            <span className="hamburger-line"></span>
+            <span className={styles.hamburger_line}></span>
+            <span className={styles.hamburger_line}></span>
+            <span className={styles.hamburger_line}></span>
           </button>
 
-          <h1 className="navbar-title">
-            <span className="navbar-title-gradient">Tutor</span> CRM
+          <h1 className={styles.title}>
+            <span className={styles.title_gradient}>Tutor</span> CRM
           </h1>
         </div>
 
         {/* Права частина */}
-        <div className="navbar-right">
+        <div className={styles.right}>
           <ThemeToggle />
-          <button type="button" className="account-button" aria-label="Account menu">
-            <span className="account-initial">A</span>
+          <button type="button" className={styles.account_button} aria-label="Account menu">
+            <span className={styles.account_initial}>A</span>
           </button>
         </div>
 
         {/* --- ВИПАДАЮЧЕ МЕНЮ --- */}
-        <div className={`mobile-menu ${isMenuOpen ? 'open' : ''}`}>
-          <nav className="mobile-menu-nav">
+        <div className={`${styles.mobile_menu} ${isMenuOpen ? styles.open : ''}`}>
+          <nav className={styles.mobile_menu_nav}>
             
             {/* ГРУПА 1: Основне меню */}
-            <div className="menu-group-top">
-              <div className="menu-item">
-                <span className="menu-icon">📅</span> Календар
+            <div className={styles.menu_group_top}>
+              <div className={styles.menu_item}>
+                <span className={styles.menu_icon}>📅</span> Календар
               </div>
-              <div className="menu-item">
-                <span className="menu-icon">📓</span> Журнал
+              <div className={styles.menu_item}>
+                <span className={styles.menu_icon}>📓</span> Журнал
               </div>
-              <div className="menu-item">
-                <span className="menu-icon">👥</span> Студенти
+              <div className={styles.menu_item}>
+                <span className={styles.menu_icon}>👥</span> Студенти
               </div>
             </div>
 
             {/* ГРУПА 2: Службове меню */}
-            <div className="menu-group-bottom">
-              <div className="menu-separator"></div>
+            <div className={styles.menu_group_bottom}>
+              <div className={styles.menu_separator}></div>
               
-              <div className="menu-item">
-                <span className="menu-icon">⚙️</span> Налаштування
+              <div className={styles.menu_item}>
+                <span className={styles.menu_icon}>⚙️</span> Налаштування
               </div>
 
-              {/* !!! 3. Змінили <a> на div з onClick */}
-              <div 
-                className="menu-item" 
-                onClick={handleOpenHelp}
-                style={{ cursor: 'pointer' }}
-              >
-                <span className="menu-icon">❓</span> Допомога
+              <div className={styles.menu_item} onClick={handleOpenHelp}>
+                <span className={styles.menu_icon}>❓</span> Допомога
               </div>
-
             </div>
-
           </nav>
         </div>
       </header>
 
-      {/* !!! 4. Відображення компонента Help поверх сторінки */}
       {showHelp && (
-        <div className="help-modal-overlay">
+        <div className={styles.help_modal_overlay}>
           {/* Кнопка закриття (хрестик) */}
           <button 
-            className="close-help-button" 
+            className={styles.close_help_button} 
             onClick={() => setShowHelp(false)}
           >
             ✕
           </button>
           
           {/* Сам компонент допомоги */}
-          <div className="help-content-wrapper">
+          <div className={styles.help_content_wrapper}>
              <HelpPage />
           </div>
         </div>

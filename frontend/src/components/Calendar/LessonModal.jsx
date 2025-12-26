@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import './LessonModal.css'; // Стилі залишаються тими ж
+import { useState, useEffect } from 'react';
+import styles from './LessonModal.module.css';
 
 export default function LessonModal({ isOpen, onClose, onSubmit, students }) {
   const [studentId, setStudentId] = useState('');
@@ -19,19 +19,18 @@ export default function LessonModal({ isOpen, onClose, onSubmit, students }) {
     onSubmit({ student_id: studentId, topic });
   };
 
-  // ТУТ ЗМІНА: Ми просто повертаємо div, без createPortal
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={e => e.stopPropagation()}>
+    <div className={styles.modal_overlay} onClick={onClose}>
+      <div className={styles.modal_content} onClick={e => e.stopPropagation()}>
         <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '16px' }}>
           Новий урок
         </h2>
         
         <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label className="form-label">Студент</label>
+          <div className={styles.form_group}>
+            <label className={styles.form_label}>Студент</label>
             <select 
-              className="form-select"
+              className={styles.form_select}
               value={studentId}
               onChange={(e) => setStudentId(e.target.value)}
               required
@@ -43,22 +42,22 @@ export default function LessonModal({ isOpen, onClose, onSubmit, students }) {
             </select>
           </div>
 
-          <div className="form-group">
-            <label className="form-label">Тема</label>
+          <div className={styles.form_group}>
+            <label className={styles.form_label}>Тема</label>
             <input 
               type="text" 
-              className="form-input"
+              className={styles.form_input}
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
               placeholder="Наприклад: Тригонометрія"
             />
           </div>
 
-          <div className="modal-actions">
+          <div className={styles.modal_actions}>
             <button type="button" onClick={onClose} className="btn btn-cancel">
               Скасувати
             </button>
-            <button type="submit" className="btn btn-save">
+            <button type="submit" className={`${styles.btn} ${styles.btn_save}`}>
               Зберегти
             </button>
           </div>

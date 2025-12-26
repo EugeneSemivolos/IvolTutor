@@ -1,4 +1,4 @@
-.modal-overlay {
+.modal_overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -11,7 +11,7 @@
     z-index: 10000;
 }
 
-.modal-content {
+.modal_content {
     background-color: white;
     padding: 24px;
     border-radius: 12px;
@@ -21,11 +21,11 @@
     position: relative;
 }
 
-.form-group {
+.form_group {
     margin-bottom: 16px;
 }
 
-.form-label {
+.form_label {
     display: block;
     margin-bottom: 6px;
     font-weight: 600;
@@ -33,7 +33,7 @@
     font-size: 0.9rem;
 }
 
-.form-input, .form-select {
+.form_input, .form_select {
     width: 100%;
     padding: 10px;
     border: 1px solid #D1D5DB;
@@ -43,12 +43,12 @@
     box-sizing: border-box;
 }
 
-.form-input:focus, .form-select:focus {
+.form_input:focus, .form_select:focus {
     border-color: #3B82F6;
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-.modal-actions {
+.modal_actions {
     display: flex;
     justify-content: flex-end;
     gap: 10px;
@@ -64,14 +64,18 @@
     transition: background 0.2s;
 }
 
-.btn-cancel {
+.btn_cancel {
     background-color: #F3F4F6;
     color: #4B5563;
 }
-.btn-cancel:hover { background-color: #E5E7EB; }
+.btn_cancel:hover { 
+    background-color: #E5E7EB;
+}
 
-.btn-save {
+.btn_save {
     background-color: #2563EB;
     color: white;
 }
-.btn-save:hover { background-color: #1D4ED8; }
+.btn_save:hover { 
+    background-color: #1D4ED8; 
+}
