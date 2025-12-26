@@ -397,3 +397,48 @@
 .dark .menu-separator {
   background-color: rgba(75, 85, 99, 0.8);
 }
+
+/* Накладання на весь екран */
+.help-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(255, 255, 255, 1); /* Суцільний фон, бо HelpPage має свій фон */
+  z-index: 2000; /* Має бути вище за навбар */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 0.3s ease;
+}
+
+/* Кнопка закриття */
+.close-help-button {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: #e5e7eb;
+  border: none;
+  font-size: 24px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 2001; /* Вище ніж оверлей */
+  color: #374151;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.close-help-button:hover {
+  background: #d1d5db;
+}
+
+/* Анімація появи */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
