@@ -2,7 +2,7 @@
   position: fixed;
   top: var(--navbar-height, 73px);
   left: 0;
-  width: 25%; /* Примітка: для мобільних зазвичай 100%, перевірте це значення */
+  width: 20rem;
   
   height: calc(100vh - var(--navbar-height, 73px));
   height: calc(100dvh - var(--navbar-height, 73px)); 
@@ -11,11 +11,11 @@
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   
-  border-bottom: 1px solid rgba(229, 231, 235, 0.8);
+  border-right: 1px solid rgba(229, 231, 235, 0.8);
   
   transition: opacity 0.3s ease, transform 0.3s ease;
   opacity: 0;
-  transform: translateY(-10px);
+  transform: translateX(-50%);
   pointer-events: none;
   z-index: 998;
   
@@ -30,7 +30,7 @@
 
 :global(.dark) .container {
   background-color: rgba(17, 24, 39, 0.95);
-  border-bottom-color: rgba(75, 85, 99, 0.8);
+  border-right-color: rgba(75, 85, 99, 0.8);
 }
 
 /* Внутрішній контейнер */
@@ -93,4 +93,11 @@
 
 :global(.dark) .separator {
   background-color: rgba(75, 85, 99, 0.8);
+}
+
+@media (max-width: 768px) {
+  .container {
+    width: 100%;
+    border-right: none;
+  }
 }
