@@ -2,7 +2,7 @@ import { Routes, Route } from 'react-router-dom';
 
 import Navbar from './components/Navbar/Navbar';
 import Calendar from './pages/Calendar/Calendar';
-import HelpPage from './pages/Help/HelpPage';
+import Help from './pages/Help';
 
 function App() {
   return (
@@ -21,7 +21,7 @@ function App() {
       >
         <Routes>
           <Route path="/" element={<Calendar />} />
-          <Route path="/help" element={<HelpPage />} />
+          <Route path="/help" element={<Help />} />
         </Routes>
       </main>
     </>

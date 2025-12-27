@@ -4,7 +4,6 @@ import styles from './Navbar.module.css';
 import ThemeToggle from './ThemeToggle';
 import HamburgerButton from './HamburgerButton';
 import SidebarMenu from './SidebarMenu';
-import HelpPage from '../../pages/Help/HelpPage';
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
