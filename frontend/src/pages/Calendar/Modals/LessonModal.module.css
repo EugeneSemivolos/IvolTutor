@@ -70,6 +70,12 @@
 	box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
+.form_input::-webkit-outer-spin-button,
+.form_input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
 .btns {
 	display: flex;
 	justify-content: flex-end;
@@ -186,6 +192,12 @@
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%239ca3af' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 12l4-4 4 4'/%3e%3c/svg%3e");
 }
 
+/* Робимо іконку календаря та годинника білою */
+:global(.dark) .form_input::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  cursor: pointer;
+}
+
 /* Кнопка "Скасувати" в темній темі */
 :global(.dark) .btn_cancel {
   background-color: transparent; /* Прозорий фон */
@@ -218,3 +230,4 @@
   background-color: #1D4ED8; /* blue-700 */
   transform: translateY(0);
 }
+
