@@ -17,6 +17,7 @@ const EVENT_COLORS = {
 };
 
 export default function Calendar() {
+
   const [students, setStudents] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRange, setSelectedRange] = useState(null);
@@ -50,11 +51,10 @@ export default function Calendar() {
         params: { start: fetchInfo.startStr, end: fetchInfo.endStr }
       });
 
-      const formattedEvents = response.data.map(lesson => {
-        // Знаходимо ім'я студента для відображення в заголовку події
-        // (студенти можуть ще не завантажитись, тому перевірка)
-        // Але краще, щоб бекенд віддавав ім'я, або ми покладаємось на title, якщо він є
-        // Для простоти поки використовуємо lesson.topic або "Урок"
+      //ФІЛЬТРАЦІЯ
+      const activeLessons = response.data.filter(lesson => lesson.status !== 'cancelled');
+
+      const formattedEvents = activeLessons.map(lesson => {
         return {
           id: lesson.id,
           title: lesson.topic || 'Заняття', 
@@ -179,7 +179,7 @@ export default function Calendar() {
     } catch (error) {
         alert("Помилка зміни статусу");
     }
-  };
+  };  
 
   return (
     <div className="bg-white dark:bg-gray-900 h-full relative transition-colors duration-300 flex flex-col pt-6">
