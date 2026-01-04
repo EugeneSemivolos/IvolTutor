@@ -9,13 +9,6 @@ export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showHelp, setShowHelp] = useState(false); // Стан для відображення вікна допомоги
   
-
-  // Функція для відкриття допомоги та закриття меню
-  const handleOpenHelp = () => {
-    setShowHelp(true);
-    setIsMenuOpen(false); // Закриваємо меню
-  };
-
   const closeMenu = () => setIsMenuOpen(false);
 
   return (
@@ -38,7 +31,7 @@ export default function Navbar() {
           </button>
         </div>
 
-        <SidebarMenu isOpen={isMenuOpen} onOpenHelp={handleOpenHelp} onClose={closeMenu}/>
+        <SidebarMenu isOpen={isMenuOpen} onClose={closeMenu}/>
       </header>
     </>
   );

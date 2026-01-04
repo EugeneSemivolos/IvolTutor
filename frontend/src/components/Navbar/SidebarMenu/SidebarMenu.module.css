@@ -17,9 +17,6 @@
   opacity: 0;
   transform: translateX(-50%);
   pointer-events: none;
-  z-index: 998;
-  
-  overflow-y: auto;
 }
 
 .container[data-open="true"] {

@@ -4,7 +4,6 @@ import Navbar from './components/Navbar';
 import Calendar from './pages/Calendar';
 import Help from './pages/Help';
 
-// 1. Імпортуємо нові сторінки
 import StudentsPage from './pages/Students';
 import StudentProfile from './pages/Students/Profile';
 
