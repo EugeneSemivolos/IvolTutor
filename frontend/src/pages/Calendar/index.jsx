@@ -206,7 +206,22 @@ export default function Calendar() {
         // Локалізація та формат
         locale="uk"
         firstDay={1}
-        dayHeaderFormat={{ weekday: 'short', day: 'numeric', omitCommas: true }}
+        
+        views={{
+          dayGridMonth: {
+            // Для місяця показуємо тільки назву дня (Пн, Вт...)
+            dayHeaderFormat: { weekday: 'short' }
+          },
+          timeGridWeek: {
+            // Для тижня: "Пн 12"
+            dayHeaderFormat: { weekday: 'short', day: 'numeric', omitCommas: true }
+          },
+          timeGridDay: {
+            // Для дня: "Пн 12"
+            dayHeaderFormat: { weekday: 'short', day: 'numeric', omitCommas: true }
+          }
+        }}
+
         slotMinTime="08:00:00"
         slotMaxTime="22:00:00"
         allDaySlot={false}
