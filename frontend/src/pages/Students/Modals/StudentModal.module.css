@@ -75,6 +75,12 @@
   transition: all 0.2s;
 }
 
+.input::-webkit-outer-spin-button,
+.input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
 .input:focus, .textarea:focus {
   border-color: #3b82f6; /* blue-500 */
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);

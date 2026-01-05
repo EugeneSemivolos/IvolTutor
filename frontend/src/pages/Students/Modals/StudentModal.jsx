@@ -6,8 +6,9 @@ export default function StudentModal({ isOpen, onClose, onSubmit, studentToEdit 
     full_name: '',
     parent_name: '',
     telegram_contact: '',
+    grade: '',
     default_price: '',
-    comment: ''
+    comment: '',
   });
 
   useEffect(() => {
@@ -16,6 +17,7 @@ export default function StudentModal({ isOpen, onClose, onSubmit, studentToEdit 
         full_name: studentToEdit.full_name || '',
         parent_name: studentToEdit.parent_name || '',
         telegram_contact: studentToEdit.telegram_contact || '',
+        grade: studentToEdit.grade || '',
         default_price: studentToEdit.default_price || 0,
         comment: studentToEdit.comment || ''
       });
@@ -24,6 +26,7 @@ export default function StudentModal({ isOpen, onClose, onSubmit, studentToEdit 
         full_name: '',
         parent_name: '',
         telegram_contact: '',
+        grade: '',
         default_price: '',
         comment: ''
       });
@@ -65,6 +68,17 @@ export default function StudentModal({ isOpen, onClose, onSubmit, studentToEdit 
               value={formData.parent_name}
               onChange={(e) => setFormData({...formData, parent_name: e.target.value})}
               placeholder="Марія Іванівна"
+            />
+          </div>
+
+          <div className={styles.formGroup}>
+            <label className={styles.label}>Клас</label>
+            <input 
+              type="number" 
+              className={styles.input}
+              value={formData.grade}
+              onChange={(e) => setFormData({...formData, grade: e.target.value})}
+              placeholder="9"
             />
           </div>
 
