@@ -67,7 +67,7 @@ export default function StudentsPage() {
                 <tr 
                     key={s.id} 
                     className={styles.tr}
-                    onClick={() => navigate(`/students/${s.id}`)}
+                    onClick={() => navigate(`/students/${s.slug}`)}
                 >
                     <td className={styles.td}>
                         <div style={{fontWeight: 500, fontSize: '1rem'}}>{s.full_name}</div>

@@ -2,6 +2,14 @@ from typing import Optional, List
 from sqlmodel import SQLModel, Field, Relationship
 from datetime import datetime
 import uuid
+import re
+
+def generate_slug(full_name: str) -> str:
+    """Generate URL-safe slug from full name"""
+    slug = full_name.lower().strip()
+    slug = re.sub(r'[^\w\s-]', '', slug)  # Remove non-alphanumeric
+    slug = re.sub(r'[-\s]+', '-', slug)   # Replace spaces/hyphens with single hyphen
+    return slug
 
 # --- 1. УЧНІ (STUDENTS) ---
 class StudentBase(SQLModel):
@@ -14,6 +22,7 @@ class StudentBase(SQLModel):
 
 class Student(StudentBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    slug: str = Field(index=True, unique=True)  # URL-safe name for linking
     balance: float = Field(default=0.0)
     lessons: List["Lesson"] = Relationship(back_populates="student")
     transactions: List["Transaction"] = Relationship(back_populates="student")

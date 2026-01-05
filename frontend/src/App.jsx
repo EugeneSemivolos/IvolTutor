@@ -28,7 +28,7 @@ function App() {
           
           {/* 2. Додаємо маршрути для студентів */}
           <Route path="/students" element={<StudentsPage />} />
-          <Route path="/students/:id" element={<StudentProfile />} />
+          <Route path="/students/:slug" element={<StudentProfile />} />
         </Routes>
       </main>
     </>

@@ -7,7 +7,7 @@ import StudentModal from './Modals/StudentModal';
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 export default function StudentProfile() {
-  const { id } = useParams();
+  const { slug } = useParams();
   const navigate = useNavigate();
   const [student, setStudent] = useState(null);
   const [lessons, setLessons] = useState([]);
@@ -18,9 +18,8 @@ export default function StudentProfile() {
   // Функція завантаження даних
   const fetchData = async () => {
     try {
-      const resStudents = await axios.get(`${API_URL}/students/`);
-      const foundStudent = resStudents.data.find(s => s.id === id);
-      setStudent(foundStudent);
+      const resStudent = await axios.get(`${API_URL}/students/${slug}`);
+      setStudent(resStudent.data);
 
       const resLessons = await axios.get(`${API_URL}/lessons/`, {
         params: {
@@ -30,7 +29,7 @@ export default function StudentProfile() {
       });
       
       const studentLessons = resLessons.data
-        .filter(l => l.student_id === id)
+        .filter(l => l.student_id === resStudent.data.id)
         .sort((a, b) => new Date(b.start_time) - new Date(a.start_time));
 
       setLessons(studentLessons);
@@ -43,12 +42,12 @@ export default function StudentProfile() {
 
   useEffect(() => {
     fetchData();
-  }, [id]);
+  }, [slug]);
 
   // Обробка збереження змін
   const handleUpdateStudent = async (formData) => {
     try {
-      await axios.patch(`${API_URL}/students/${id}`, formData);
+      await axios.patch(`${API_URL}/students/${student.id}`, formData);
       setIsEditModalOpen(false);
       fetchData(); // Оновлюємо дані на сторінці
     } catch (e) {

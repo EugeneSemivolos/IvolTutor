@@ -14,7 +14,7 @@ from .database import init_db, get_session
 from .models import (
     Student, StudentCreate, StudentUpdate, 
     Lesson, LessonCreate, LessonUpdate, 
-    Transaction
+    Transaction, generate_slug
 )
 
 app = FastAPI(title="Tutor CRM API")
@@ -64,7 +64,9 @@ def read_students(session: Session = Depends(get_session)):
 @app.post("/students/", response_model=Student)
 def create_student(student_in: StudentCreate, session: Session = Depends(get_session)):
     # construct Student from incoming data (avoid pydantic v2-only methods)
-    student = Student(**student_in.dict())
+    student_data = student_in.dict()
+    student_data['slug'] = generate_slug(student_data['full_name'])
+    student = Student(**student_data)
     session.add(student)
     session.commit()
     session.refresh(student)
@@ -83,6 +85,14 @@ def update_student(student_id: uuid.UUID, student_in: StudentUpdate, session: Se
     session.add(student)
     session.commit()
     session.refresh(student)
+    return student
+
+@app.get("/students/{slug}", response_model=Student)
+def read_student_by_slug(slug: str, session: Session = Depends(get_session)):
+    statement = select(Student).where(Student.slug == slug)
+    student = session.exec(statement).first()
+    if not student:
+        raise HTTPException(status_code=404, detail="Student not found")
     return student
 
 # --- LESSONS ---
