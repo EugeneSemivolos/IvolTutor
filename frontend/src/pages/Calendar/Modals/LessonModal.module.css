@@ -31,6 +31,27 @@
 	margin-bottom: 16px;
 }
 
+/* Статус рядок при редагуванні */
+.status_row {
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  color: #374151;
+}
+
+.status_bold {
+  font-weight: 700;
+}
+
+/* Гнучкий рядок для часу */
+.row {
+  display: flex;
+  gap: 1rem;
+}
+
+.flex1 {
+  flex: 1;
+}
+
 .form_label {
 	display: block;
 	margin-bottom: 6px;

@@ -95,16 +95,16 @@ export default function LessonModal({
         </h2>
         
         {/* Статус (Тільки при редагуванні) */}
-        {lessonToEdit && (
-          <div style={{marginBottom: '1rem', fontSize: '0.9rem', color: '#374151'}}>
-             Статус: <span style={{fontWeight: 'bold'}}>{
-                lessonToEdit.status === 'completed' ? '✅ Проведено' :
-                lessonToEdit.status === 'cancelled' ? '❌ Скасовано' :
-                lessonToEdit.status === 'no_show' ? '😡 Не прийшов' :
-                '📅 Заплановано'
+          {lessonToEdit && (
+           <div className={styles.status_row}>
+             Статус: <span className={styles.status_bold}>{
+               lessonToEdit.status === 'completed' ? '✅ Проведено' :
+               lessonToEdit.status === 'cancelled' ? '❌ Скасовано' :
+               lessonToEdit.status === 'no_show' ? '😡 Не прийшов' :
+               '📅 Заплановано'
              }</span>
-          </div>
-        )}
+           </div>
+          )}
 
         <form onSubmit={handleSubmit}>
           {/* Студент */}
@@ -132,8 +132,8 @@ export default function LessonModal({
           </div>
 
           {/* Час */}
-          <div style={{ display: 'flex', gap: '1rem' }}>
-            <div className={styles.form_group} style={{ flex: 1 }}>
+          <div className={styles.row}>
+            <div className={`${styles.form_group} ${styles.flex1}`}>
               <label className={styles.form_label}>Початок</label>
               <input 
                 type="time" 
@@ -143,7 +143,7 @@ export default function LessonModal({
                 required
               />
             </div>
-            <div className={styles.form_group} style={{ flex: 1 }}>
+            <div className={`${styles.form_group} ${styles.flex1}`}>
               <label className={styles.form_label}>Кінець</label>
               <input 
                 type="time" 

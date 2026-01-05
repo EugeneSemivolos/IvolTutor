@@ -78,6 +78,12 @@
   font-weight: 500;
 }
 
+/* Порожній список */
+.empty {
+  cursor: default;
+  color: #9ca3af;
+}
+
 /* Placeholder (коли нічого не вибрано) */
 .placeholder {
   color: #9ca3af;

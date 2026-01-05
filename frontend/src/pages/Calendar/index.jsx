@@ -16,6 +16,7 @@ const EVENT_COLORS = {
   default: '#6B7280'    
 };
 
+
 export default function Calendar() {
 
   const [students, setStudents] = useState([]);
@@ -184,6 +185,8 @@ export default function Calendar() {
   return (
     <div className="bg-white dark:bg-gray-900 h-full relative transition-colors duration-300 flex flex-col pt-6">
       
+      {/* calendar styles moved to Calendar.module.css */}
+
       {errorMsg && (
         <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 mx-4 rounded" role="alert">
           <p>{errorMsg}</p>
