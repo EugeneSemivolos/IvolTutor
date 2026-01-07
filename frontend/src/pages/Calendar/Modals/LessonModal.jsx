@@ -88,7 +88,7 @@ export default function LessonModal({
   ];
 
   return (
-    <div className={styles.overlay} onClick={onClose}>
+    <div className={styles.overlay}>
       <div className={styles.content} onClick={e => e.stopPropagation()}>
         <h2 className={styles.form_title}>
           {lessonToEdit ? 'Редагувати урок' : 'Новий урок'}
