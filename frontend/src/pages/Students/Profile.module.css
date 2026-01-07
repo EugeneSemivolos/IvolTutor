@@ -207,6 +207,10 @@
   color: #b91c1c;
 }
 
+.statusNoshow {
+  background-color: #fed7aa;
+  color: #c2410c;
+}
 
 .statusPlanned {
   background-color: #dbeafe;
@@ -288,6 +292,11 @@
 :global(.dark) .statusCancelled {
   background-color: rgba(185, 28, 28, 0.3);
   color: #f87171;
+}
+
+:global(.dark) .statusNoshow {
+  background-color: rgba(194, 65, 12, 0.3);
+  color: #fdba74;
 }
 
 :global(.dark) .statusPlanned {

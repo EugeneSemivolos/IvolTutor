@@ -155,10 +155,13 @@ export default function StudentProfile() {
                       <span className={`${styles.statusBadge} ${
                         lesson.status === 'completed' ? styles.statusCompleted :
                         lesson.status === 'cancelled' ? styles.statusCancelled :
+                        lesson.status === 'no_show' ? styles.statusNoshow :
                         styles.statusPlanned
                       }`}>
                         {lesson.status === 'completed' ? 'Проведено' : 
-                         lesson.status === 'cancelled' ? 'Скасовано' : 'Заплановано'}
+                         lesson.status === 'cancelled' ? 'Скасовано' :
+                         lesson.status === 'no_show' ? 'Не прийшов' :
+                         'Заплановано'}
                       </span>
                     </td>
                     <td className={styles.td}>{lesson.price} грн</td>
