@@ -123,8 +123,6 @@ export default function Calendar() {
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setEditingLesson(null);
-    const calendarApi = calendarRef.current?.getApi();
-    if (calendarApi) calendarApi.unselect();
   };
 
   // Збереження (Створення або Редагування)
