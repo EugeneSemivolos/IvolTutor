@@ -112,13 +112,21 @@ export default function LessonModal({
           {/* Студент */}
           <div className={styles.form_group}>
             <label className={styles.form_label}>Студент</label>
-            <Select 
-              options={studentOptions}
-              value={studentId}
-              onChange={setStudentId}
-              placeholder="Оберіть студента..."
-              required
-            />
+            {lessonToEdit ? (
+              // При редагуванні - показуємо ім'я студента як текст
+              <div className={styles.form_value}>
+                {students.find(s => s.id === studentId)?.full_name || 'Невідомий студент'}
+              </div>
+            ) : (
+              // При створенні - вибір студента зі списку
+              <Select 
+                options={studentOptions}
+                value={studentId}
+                onChange={setStudentId}
+                placeholder="Оберіть студента..."
+                required
+              />
+            )}
           </div>
 
           {/* Дата */}
@@ -225,6 +233,14 @@ export default function LessonModal({
               <div className={styles.confirm_btns}>
                 <button
                   type="button"
+                  className={`${styles.btn} ${styles.btn_close}`}
+                  onClick={() => setShowCancelConfirm(false)}
+                >
+                  Закрити
+                </button>
+
+                <button
+                  type="button"
                   className={`${styles.btn} ${styles.btn_noshow}`}
                   onClick={() => {
                     onStatusChange('no_show');
@@ -245,13 +261,6 @@ export default function LessonModal({
                   Скасувати
                 </button>
 
-                <button
-                  type="button"
-                  className={`${styles.btn} ${styles.btn_close}`}
-                  onClick={() => setShowCancelConfirm(false)}
-                >
-                  Закрити
-                </button>
               </div>
             </div>
           </div>

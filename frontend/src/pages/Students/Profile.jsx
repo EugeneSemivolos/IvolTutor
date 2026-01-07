@@ -187,7 +187,7 @@ export default function StudentProfile() {
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
         onSubmit={handleUpdateStudent}
-        studentToEdit={student} 
+        student={student} 
       />
     </div>
   );

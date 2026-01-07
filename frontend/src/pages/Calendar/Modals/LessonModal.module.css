@@ -97,6 +97,17 @@
   margin: 0;
 }
 
+.form_value {
+  padding: 10px;
+  border: 1px solid #D1D5DB;
+  border-radius: 6px;
+  font-size: 1rem;
+  background-color: #f9fafb;
+  color: #374151;
+  display: flex;
+  align-items: center;
+}
+
 .btns {
 	display: flex;
 	justify-content: flex-end;
@@ -273,6 +284,12 @@
   background-color: #374151; /* gray-700 */
   border-color: #4b5563; /* gray-600 */
   color: white;
+}
+
+:global(.dark) .form_value {
+  background-color: #374151;
+  border-color: #4b5563;
+  color: #d1d5db;
 }
 
 :global(.dark) .form_select {
