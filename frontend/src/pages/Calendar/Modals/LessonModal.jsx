@@ -168,18 +168,6 @@ export default function LessonModal({
             </div>
           )}
 
-          {/* Тема (Нове поле) */}
-          <div className={styles.form_group}>
-            <label className={styles.form_label}>Тема уроку</label>
-            <input 
-              type="text" 
-              className={styles.form_input}
-              value={topic}
-              onChange={(e) => setTopic(e.target.value)}
-              placeholder="Наприклад: Тригонометрія"
-            />
-          </div>
-
           {/* --- КНОПКИ --- */}
           <div className={styles.btns}>
             <button 
