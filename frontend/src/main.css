@@ -95,3 +95,8 @@ body {
 .fc .fc-button-primary:focus {
   box-shadow: 0 0 0 2px var(--cal-border) !important;
 }
+
+/* Для завершених уроків - курсор як pointer */
+.event-completed {
+  cursor: pointer !important;
+}

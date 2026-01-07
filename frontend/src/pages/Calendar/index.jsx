@@ -66,6 +66,8 @@ export default function Calendar() {
           end: lesson.end_time,
           backgroundColor: EVENT_COLORS[lesson.status] || EVENT_COLORS.default,
           borderColor: 'transparent',
+          editable: lesson.status !== 'completed', // Забороняємо редагування завершених уроків
+          className: lesson.status === 'completed' ? 'event-completed' : '', // Клас для завершених уроків
           extendedProps: { ...lesson } 
         };
       });
@@ -106,8 +108,7 @@ export default function Calendar() {
 
   // Спільна функція для оновлення часу (Drag & Drop та Resize)
   const handleEventUpdate = async (info) => {
-    const lessonId = info.event.id;                        // "Оптимістичний" UI вже оновився, нам треба лише відправити запит
-
+    const lessonId = info.event.id;
     const newStart = formatLocalISO(info.event.start);
     const newEnd = formatLocalISO(info.event.end);
 
@@ -118,7 +119,6 @@ export default function Calendar() {
         });
     } catch (error) {
         console.error("Помилка оновлення часу:", error);
-        alert("Не вдалося змінити час заняття");
         info.revert(); // Повертаємо подію назад у разі помилки
     }
   };
