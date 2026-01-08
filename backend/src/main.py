@@ -252,8 +252,15 @@ def create_payment(payment_in: PaymentCreate, session: Session = Depends(get_ses
     return payment
 
 @app.get("/payments/student/{student_id}", response_model=List[Payment])
-def get_student_payments(student_id: uuid.UUID, session: Session = Depends(get_session)):
-    """Отримати всі платежи студента"""
-    statement = select(Payment).where(Payment.student_id == student_id)
+def get_student_payments(
+    student_id: uuid.UUID, 
+    skip: int = 0,
+    limit: int = 100,
+    session: Session = Depends(get_session)
+):
+    """Отримати платежи студента з пагінацією"""
+    statement = select(Payment).where(
+        Payment.student_id == student_id
+    ).order_by(Payment.date.desc()).offset(skip).limit(limit)
     payments = session.exec(statement).all()
     return payments

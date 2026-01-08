@@ -12,12 +12,16 @@ export default function StudentProfile() {
   const navigate = useNavigate();
   const [student, setStudent] = useState(null);
   const [lessons, setLessons] = useState([]);
+  const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [loadingMorePayments, setLoadingMorePayments] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(true);
+  const [paymentOffset, setPaymentOffset] = useState(0);
+  const [hasMorePayments, setHasMorePayments] = useState(true);
 
   // Функція завантаження даних
   const fetchData = async (newOffset = 0) => {
@@ -42,6 +46,17 @@ export default function StudentProfile() {
       
       if (isInitialLoad) {
         setLessons(resLessons.data);
+        
+        // Завантажуємо платежі тільки при першому завантаженні
+        const resPayments = await axios.get(`${API_URL}/payments/student/${resStudent.data.id}`, {
+          params: {
+            skip: 0,
+            limit: 3
+          }
+        });
+        setPayments(resPayments.data);
+        setHasMorePayments(resPayments.data.length === 3);
+        setPaymentOffset(3);
       } else {
         setLessons(prev => [...prev, ...resLessons.data]);
       }
@@ -54,6 +69,26 @@ export default function StudentProfile() {
     } finally {
       if (isInitialLoad) setLoading(false);
       else setLoadingMore(false);
+    }
+  };
+
+  // Функція завантаження ще платежів
+  const fetchMorePayments = async () => {
+    setLoadingMorePayments(true);
+    try {
+      const resPayments = await axios.get(`${API_URL}/payments/student/${student.id}`, {
+        params: {
+          skip: paymentOffset,
+          limit: 3
+        }
+      });
+      setPayments(prev => [...prev, ...resPayments.data]);
+      setHasMorePayments(resPayments.data.length === 3);
+      setPaymentOffset(paymentOffset + 3);
+    } catch (error) {
+      console.error("Error fetching payments:", error);
+    } finally {
+      setLoadingMorePayments(false);
     }
   };
 
@@ -90,8 +125,22 @@ export default function StudentProfile() {
   };
 
   // Обробка успішного внесення платежу
-  const handlePaymentSuccess = () => {
-    fetchData(); // Оновлюємо дані, включаючи баланс
+  const handlePaymentSuccess = async () => {
+    // Оновлюємо студента для актуального балансу
+    const resStudent = await axios.get(`${API_URL}/students/${slug}`);
+    setStudent(resStudent.data);
+    
+    // Перезавантажуємо платежі з пагінацією (останні 3)
+    const resPayments = await axios.get(`${API_URL}/payments/student/${resStudent.data.id}`, {
+      params: {
+        skip: 0,
+        limit: 3
+      }
+    });
+    setPayments(resPayments.data);
+    setHasMorePayments(resPayments.data.length === 3);
+    setPaymentOffset(3);
+    
     setIsPaymentModalOpen(false);
   };
 
@@ -226,6 +275,54 @@ export default function StudentProfile() {
               disabled={loadingMore}
             >
               {loadingMore ? 'Завантаження...' : 'Ще...'}
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Архів платежів */}
+      <h2 className={styles.sectionTitle}>Архів платежів</h2>
+      <div className={styles.tableCard}>
+        {payments.length === 0 ? (
+          <div className={styles.emptyState}>Платежів немає</div>
+        ) : (
+          <div className={styles.tableWrapper}>
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  <th className={styles.th}>Дата</th>
+                  <th className={styles.th}>Сума</th>
+                  <th className={styles.th}>Коментар</th>
+                </tr>
+              </thead>
+              <tbody>
+                {payments.map(payment => (
+                  <tr key={payment.id} className={styles.tr}>
+                    <td className={styles.td}>
+                      <div style={{fontWeight: 500}}>{new Date(payment.date).toLocaleDateString('uk-UA')}</div>
+                      <div style={{fontSize: '0.75rem', color: '#9ca3af'}}>
+                        {new Date(payment.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                      </div>
+                    </td>
+                    <td className={styles.td}>
+                      <span style={{color: '#10b981', fontWeight: 500}}>+{payment.amount} грн</span>
+                    </td>
+                    <td className={styles.td}>{payment.comment || '—'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+        
+        {hasMorePayments && (
+          <div style={{display: 'flex', justifyContent: 'center', marginTop: '1.5rem'}}>
+            <button 
+              onClick={fetchMorePayments}
+              className={styles.loadMoreBtn}
+              disabled={loadingMorePayments}
+            >
+              {loadingMorePayments ? 'Завантаження...' : 'Ще...'}
             </button>
           </div>
         )}
