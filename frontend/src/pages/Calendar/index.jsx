@@ -55,13 +55,14 @@ export default function Calendar() {
   const fetchEventsSource = useCallback(async (fetchInfo, successCallback, failureCallback) => {
     try {
       const response = await axios.get(`${API_URL}/lessons/`, {
-        params: { start: fetchInfo.startStr, end: fetchInfo.endStr }
+        params: { 
+          start: fetchInfo.startStr, 
+          end: fetchInfo.endStr,
+          status: 'planned,completed'  // Фільтруємо на сервері - показуємо тільки активні урок
+        }
       });
 
-      //ФІЛЬТРАЦІЯ - приховуємо скасовані уроки і уроки "не прийшов"
-      const activeLessons = response.data.filter(lesson => lesson.status !== 'cancelled' && lesson.status !== 'no_show');
-
-      const formattedEvents = activeLessons.map(lesson => {
+      const formattedEvents = response.data.map(lesson => {
         return {
           id: lesson.id,
           title: lesson.topic || 'Заняття', 
