@@ -1,6 +1,6 @@
 from typing import Optional, List
 from sqlmodel import SQLModel, Field, Relationship
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 import uuid
 import re
 
@@ -87,11 +87,12 @@ class Transaction(SQLModel, table=True):
 class PaymentBase(SQLModel):
     amount: float
     comment: Optional[str] = None
+    payment_time: Optional[str] = None  # HH:MM формат часу платежу
 
 class Payment(PaymentBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     student_id: uuid.UUID = Field(foreign_key="student.id")
-    date: datetime = Field(default_factory=datetime.utcnow)
+    date: datetime = Field(default_factory=lambda: datetime.now(timezone(timedelta(hours=2))))
     student: Optional[Student] = Relationship(back_populates="payments")
 
 class PaymentCreate(PaymentBase):

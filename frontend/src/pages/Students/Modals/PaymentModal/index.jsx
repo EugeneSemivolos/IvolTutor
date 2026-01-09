@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import styles from './PaymentModal.module.css';
 
@@ -8,8 +8,19 @@ export default function PaymentModal({ isOpen, onClose, onSuccess, preselectedSt
   const [studentId, setStudentId] = useState(preselectedStudentId || '');
   const [amount, setAmount] = useState('');
   const [comment, setComment] = useState('');
+  const [paymentTime, setPaymentTime] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState(null);
+
+  // Встановлюємо поточний час при відкритті модалі
+  useEffect(() => {
+    if (isOpen && !paymentTime) {
+      const now = new Date();
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      setPaymentTime(`${hours}:${minutes}`);
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -33,11 +44,13 @@ export default function PaymentModal({ isOpen, onClose, onSuccess, preselectedSt
       await axios.post(`${API_URL}/payments/`, {
         student_id: studentId,
         amount: parseFloat(amount),
-        comment: comment || null
+        comment: comment || null,
+        payment_time: paymentTime || null
       });
 
       setAmount('');
       setComment('');
+      setPaymentTime('');
       if (!preselectedStudentId) {
         setStudentId('');
       }
@@ -94,6 +107,17 @@ export default function PaymentModal({ isOpen, onClose, onSuccess, preselectedSt
               onChange={(e) => setAmount(e.target.value)}
               placeholder="0.00"
               required
+            />
+          </div>
+
+          {/* Час сплати */}
+          <div className={styles.formGroup}>
+            <label className={styles.label}>Час сплати (опціонально)</label>
+            <input
+              type="time"
+              className={styles.input}
+              value={paymentTime}
+              onChange={(e) => setPaymentTime(e.target.value)}
             />
           </div>
 

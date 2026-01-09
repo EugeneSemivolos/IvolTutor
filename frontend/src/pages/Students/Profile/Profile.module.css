@@ -151,6 +151,15 @@
   color: #1f2937;
 }
 
+.tg_link {
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.tg_link:hover {
+  text-decoration: underline; /* З'являється підкреслення */
+}
+
 .commentSection {
   margin-top: 1.5rem;
   padding-top: 1rem;

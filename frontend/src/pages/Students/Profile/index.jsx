@@ -202,8 +202,19 @@ export default function StudentProfile() {
             <span className={styles.detailValue}>{student.grade || '-'}</span>
           </div>
           <div className={styles.detailItem}>
-            <span className={styles.detailLabel}>Контакт</span>
-            <span className={styles.detailValue}>{student.telegram_contact || '-'}</span>
+            <span className={styles.detailLabel}>ТГ контакт</span>
+            {student.telegram_contact ? (
+              <a 
+                href={`https://t.me/${student.telegram_contact.replace('@', '')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`${styles.detailValue} ${styles.tg_link}`}
+              >
+                {student.telegram_contact}
+              </a>
+            ) : (
+              <span className={styles.detailValue}>-</span>
+            )}
           </div>
           <div className={styles.detailItem}>
             <span className={styles.detailLabel}>Тариф</span>
@@ -291,6 +302,7 @@ export default function StudentProfile() {
               <thead>
                 <tr>
                   <th className={styles.th}>Дата</th>
+                  <th className={styles.th}>Час</th>
                   <th className={styles.th}>Сума</th>
                   <th className={styles.th}>Коментар</th>
                 </tr>
@@ -300,9 +312,9 @@ export default function StudentProfile() {
                   <tr key={payment.id} className={styles.tr}>
                     <td className={styles.td}>
                       <div style={{fontWeight: 500}}>{new Date(payment.date).toLocaleDateString('uk-UA')}</div>
-                      <div style={{fontSize: '0.75rem', color: '#9ca3af'}}>
-                        {new Date(payment.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-                      </div>
+                    </td>
+                    <td className={styles.td}>
+                      {payment.payment_time || new Date(payment.date).toLocaleTimeString('uk-UA', {hour: '2-digit', minute:'2-digit', hour12: false})}
                     </td>
                     <td className={styles.td}>
                       <span style={{color: '#10b981', fontWeight: 500}}>+{payment.amount} грн</span>
