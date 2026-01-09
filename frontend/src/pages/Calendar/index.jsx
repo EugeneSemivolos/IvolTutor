@@ -154,27 +154,58 @@ export default function Calendar() {
     try {
       if (editingLesson) {
         // Логіка РЕДАГУВАННЯ (PATCH)
-        // Формуємо об'єкт тільки зі змінними даними
-        // (LessonModal вже має повертати готовий об'єкт, але для певності)
         const updateData = {
-            ...formData,
-            // Якщо ми редагуємо, дати приходять з форми модалки
-            // А якщо створюємо - з selectedRange. 
-            // LessonModal має це враховувати (див. код LessonModal вище)
+            student_id: formData.student_id,
+            start_time: formData.start_time,
+            end_time: formData.end_time,
+            topic: formData.topic,
+            status: formData.status
         };
         
         await axios.patch(`${API_URL}/lessons/${editingLesson.id}`, updateData);
 
       } else {
         // Логіка СТВОРЕННЯ (POST)
-        // Додаємо час з виділення, якщо він не прийшов з форми (хоча LessonModal тепер сам керує часом)
-        // Для надійності:
-        const newLesson = {
-          ...formData,
-          status: 'planned'
-          // Ціну не передаємо - бекенд підтягне з профілю студента
-        };
-        await axios.post(`${API_URL}/lessons/`, newLesson);
+        if (formData.frequency === 'weekly' && formData.repeatUntil) {
+          // Генеруємо щотижневі заняття
+          const startDate = new Date(formData.start_time);
+          const endDate = new Date(formData.end_time);
+          const repeatUntilDate = new Date(formData.repeatUntil);
+          
+          const lessons = [];
+          let currentStart = new Date(startDate);
+          let currentEnd = new Date(endDate);
+          
+          while (currentStart <= repeatUntilDate && lessons.length < 40) {
+            lessons.push({
+              student_id: formData.student_id,
+              start_time: currentStart.toISOString().slice(0, -1), // Без 'Z'
+              end_time: currentEnd.toISOString().slice(0, -1),
+              topic: formData.topic,
+              status: 'planned'
+            });
+            
+            // Переходимо на наступний тиждень
+            currentStart.setDate(currentStart.getDate() + 7);
+            currentEnd.setDate(currentEnd.getDate() + 7);
+          }
+          
+          // Створюємо всі заняття паралельно
+          await Promise.all(lessons.map(lesson => 
+            axios.post(`${API_URL}/lessons/`, lesson)
+          ));
+          
+        } else {
+          // Одноразове заняття
+          const newLesson = {
+            student_id: formData.student_id,
+            start_time: formData.start_time,
+            end_time: formData.end_time,
+            topic: formData.topic,
+            status: 'planned'
+          };
+          await axios.post(`${API_URL}/lessons/`, newLesson);
+        }
       }
       
       handleCloseModal();
@@ -229,9 +260,7 @@ export default function Calendar() {
   };  
 
   return (
-    <div className="bg-white dark:bg-gray-900 h-full relative transition-colors duration-300 flex flex-col pt-6">
-      
-      {/* calendar styles moved to Calendar.module.css */}
+    <>
 
       {errorMsg && (
         <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 mx-4 rounded" role="alert">
@@ -239,7 +268,7 @@ export default function Calendar() {
         </div>
       )}
 
-      <FullCalendar
+        <FullCalendar
         ref={calendarRef}
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
         initialView="timeGridWeek"
@@ -303,7 +332,7 @@ export default function Calendar() {
         
         // UI макет
         expandRows={true}
-        stickyHeaderDates={true}
+        height='90vh'
       />
 
       <LessonModal 
@@ -331,6 +360,6 @@ export default function Calendar() {
         preselectedStudentId={selectedStudentForPayment}
         students={students}
       />
-    </div>
+    </>
   );
 }

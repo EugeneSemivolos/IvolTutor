@@ -19,6 +19,8 @@ export default function LessonModal({
   const [endTime, setEndTime] = useState('');
   const [topic, setTopic] = useState('');
   const [frequency, setFrequency] = useState('once');
+  const [repeatUntil, setRepeatUntil] = useState('');
+  const [frequencyError, setFrequencyError] = useState('');
   const [showCancelConfirm, setShowCancelConfirm] = useState(false); 
 
   // --- USE EFFECT: Заповнення даних ---
@@ -40,6 +42,8 @@ export default function LessonModal({
         setStudentId('');
         setTopic('');
         setFrequency('once');
+        setRepeatUntil('');
+        setFrequencyError('');
 
         if (initialDateRange) {
             // Якщо клікнули в календарі, беремо ці дату і час
@@ -61,9 +65,77 @@ export default function LessonModal({
 
   if (!isOpen) return null;
 
+  // Функція для автоматичного розрахунку часу кінця (+1 година від початку)
+  const handleStartTimeChange = (value) => {
+    setStartTime(value);
+    
+    if (!lessonToEdit && value) {
+      // Розбираємо час (HH:MM)
+      const [hours, minutes] = value.split(':').map(Number);
+      
+      // Додаємо 1 годину
+      let newHours = hours + 1;
+      let newMinutes = minutes;
+      
+      // Обробка переходу через північ
+      if (newHours >= 24) {
+        newHours = newHours - 24;
+      }
+      
+      // Форматуємо назад у HH:MM
+      const formattedEndTime = `${String(newHours).padStart(2, '0')}:${String(newMinutes).padStart(2, '0')}`;
+      setEndTime(formattedEndTime);
+    }
+  };
+
+  // Функція для підрахунку кількості занять
+  const calculateLessonsCount = (startDate, endDate) => {
+    if (!startDate || !endDate) return 0;
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    if (end < start) return 0;
+    const diffTime = end.getTime() - start.getTime();
+    const diffWeeks = Math.floor(diffTime / (7 * 24 * 60 * 60 * 1000));
+    return diffWeeks + 1; // +1 бо включаємо перше заняття
+  };
+
+  // Валідація при зміні дати repeatUntil
+  const handleRepeatUntilChange = (value) => {
+    setRepeatUntil(value);
+    if (frequency === 'weekly' && value && date) {
+      const count = calculateLessonsCount(date, value);
+      if (count > 40) {
+        setFrequencyError(`Забагато занять (${count}). Максимум 40 занять за раз.`);
+      } else if (count <= 0) {
+        setFrequencyError('Дата закінчення повинна бути після дати початку.');
+      } else {
+        setFrequencyError('');
+      }
+    } else {
+      setFrequencyError('');
+    }
+  };
+
   // --- SUBMIT ---
   const handleSubmit = (e) => {
     e.preventDefault();
+    
+    // Перевірка для щотижневих занять
+    if (frequency === 'weekly' && !lessonToEdit) {
+      if (!repeatUntil) {
+        setFrequencyError('Вкажіть дату закінчення для щотижневих занять.');
+        return;
+      }
+      const count = calculateLessonsCount(date, repeatUntil);
+      if (count > 40) {
+        setFrequencyError(`Забагато занять (${count}). Максимум 40 занять за раз.`);
+        return;
+      }
+      if (count <= 0) {
+        setFrequencyError('Дата закінчення повинна бути після дати початку.');
+        return;
+      }
+    }
     
     // Формуємо ISO рядки
     const startDateTime = `${date}T${startTime}:00`;
@@ -74,7 +146,9 @@ export default function LessonModal({
       start_time: startDateTime,
       end_time: endDateTime,
       topic: topic,
-      status: lessonToEdit ? lessonToEdit.status : 'planned'
+      status: lessonToEdit ? lessonToEdit.status : 'planned',
+      frequency: frequency,
+      repeatUntil: repeatUntil
     });
   };
 
@@ -86,7 +160,7 @@ export default function LessonModal({
 
   const frequencyOptions = [
     { value: 'once', label: 'Одноразове заняття' },
-    { value: 'weekly', label: 'Щотижня (тільки цей)' }, 
+    { value: 'weekly', label: 'Щотижня' }, 
   ];
 
   return (
@@ -149,7 +223,7 @@ export default function LessonModal({
                 type="time" 
                 className={styles.form_input}
                 value={startTime}
-                onChange={(e) => setStartTime(e.target.value)}
+                onChange={(e) => handleStartTimeChange(e.target.value)}
                 required
               />
             </div>
@@ -167,15 +241,48 @@ export default function LessonModal({
 
           {/* Частота */}
           {!lessonToEdit && (
-            <div className={styles.form_group}>
-                <label className={styles.form_label}>Частота занять</label>
-                <Select 
-                    options={frequencyOptions}
-                    value={frequency}
-                    onChange={setFrequency}
-                    placeholder="Частота"
-                />
-            </div>
+            <>
+              <div className={styles.form_group}>
+                  <label className={styles.form_label}>Частота занять</label>
+                  <Select 
+                      options={frequencyOptions}
+                      value={frequency}
+                      onChange={(val) => {
+                        setFrequency(val);
+                        if (val === 'once') {
+                          setRepeatUntil('');
+                          setFrequencyError('');
+                        }
+                      }}
+                      placeholder="Частота"
+                  />
+              </div>
+              
+              {/* Дата закінчення для щотижневих занять */}
+              {frequency === 'weekly' && (
+                <div className={styles.form_group}>
+                  <label className={styles.form_label}>Заповнити календар до</label>
+                  <input 
+                    type="date" 
+                    className={styles.form_input}
+                    value={repeatUntil}
+                    onChange={(e) => handleRepeatUntilChange(e.target.value)}
+                    min={date}
+                    required
+                  />
+                  {repeatUntil && date && !frequencyError && (
+                    <div className={styles.info_text}>
+                      Буде створено {calculateLessonsCount(date, repeatUntil)} занять
+                    </div>
+                  )}
+                  {frequencyError && (
+                    <div className={styles.error_text}>
+                      {frequencyError}
+                    </div>
+                  )}
+                </div>
+              )}
+            </>
           )}
 
           {/* --- КНОПКИ --- */}

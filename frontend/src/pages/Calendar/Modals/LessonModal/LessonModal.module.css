@@ -440,3 +440,26 @@
 :global(.dark) .confirm_text {
   color: #d1d5db;
 }
+
+/* Інформаційний текст */
+.info_text {
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: #059669;
+}
+
+/* Текст помилки */
+.error_text {
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: #dc2626;
+  font-weight: 500;
+}
+
+:global(.dark) .info_text {
+  color: #34d399;
+}
+
+:global(.dark) .error_text {
+  color: #f87171;
+}
