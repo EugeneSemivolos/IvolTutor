@@ -1,15 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import styles from './LessonResultModal.module.css';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
-export default function LessonResultModal({ isOpen, onClose, onSuccess, lessonId, studentTelegram }) {
+export default function LessonResultModal({ isOpen, onClose, onSuccess, lessonId, studentTelegram, studentSlug, lessonDate }) {
   const [materialFile, setMaterialFile] = useState(null);
   const [homeworkFile, setHomeworkFile] = useState(null);
   const [topic, setTopic] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState(null);
+
+  // Обробник вставки з clipboard
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handlePaste = (e) => {
+      const items = e.clipboardData?.items;
+      if (!items) return;
+
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        
+        // Перевіряємо чи це зображення
+        if (item.type.indexOf('image') !== -1) {
+          e.preventDefault();
+          const blob = item.getAsFile();
+          
+          // Створюємо File об'єкт з blob
+          const file = new File([blob], `homework-${Date.now()}.png`, { type: blob.type });
+          setHomeworkFile(file);
+          break;
+        }
+      }
+    };
+
+    window.addEventListener('paste', handlePaste);
+    return () => window.removeEventListener('paste', handlePaste);
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -31,9 +59,15 @@ export default function LessonResultModal({ isOpen, onClose, onSuccess, lessonId
 
       // Завантажити файли, якщо вони є
       if (materialFile || homeworkFile) {
+        // Форматуємо дату у форматі YYYY-MM-DD
+        const lessonDateObj = new Date(lessonDate);
+        const formattedDate = lessonDateObj.toISOString().split('T')[0];
+        
         const formData = new FormData();
         if (materialFile) formData.append('files', materialFile);
         if (homeworkFile) formData.append('files', homeworkFile);
+        formData.append('student_slug', studentSlug);
+        formData.append('lesson_date', formattedDate);
 
         const uploadRes = await axios.post(`${API_URL}/upload/`, formData, {
           headers: { 'Content-Type': 'multipart/form-data' }
@@ -137,6 +171,7 @@ export default function LessonResultModal({ isOpen, onClose, onSuccess, lessonId
           {homeworkFile && (
             <p className={styles.file_name}>✓ {homeworkFile.name}</p>
           )}
+          <p className={styles.paste_hint}>Або натисніть Ctrl+V для вставки фото з буфера обміну</p>
         </div>
 
         <div className={styles.btns}>

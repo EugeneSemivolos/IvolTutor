@@ -64,6 +64,9 @@ class LessonUpdate(SQLModel):
     topic: Optional[str] = None
     status: Optional[str] = None
     price: Optional[float] = None
+    material_url: Optional[str] = None
+    homework_url: Optional[str] = None
+    series_id: Optional[uuid.UUID] = None
 
 # Модель БД (ціна обов'язкова)
 class Lesson(LessonBase, table=True):

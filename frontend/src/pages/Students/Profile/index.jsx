@@ -243,6 +243,8 @@ export default function StudentProfile() {
                 <tr>
                   <th className={styles.th}>Дата</th>
                   <th className={styles.th}>Тема</th>
+                  <th className={styles.th}>Матеріал</th>
+                  <th className={styles.th}>Домашнє завдання</th>
                   <th className={styles.th}>Статус</th>
                   <th className={styles.th}>Ціна</th>
                 </tr>
@@ -257,6 +259,34 @@ export default function StudentProfile() {
                       </div>
                     </td>
                     <td className={styles.td}>{lesson.topic || 'Без теми'}</td>
+                    <td className={styles.td}>
+                      {lesson.material_url ? (
+                        <a 
+                          href={`${API_URL}${lesson.material_url}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={styles.fileLink}
+                        >
+                          Переглянути
+                        </a>
+                      ) : (
+                        '-'
+                      )}
+                    </td>
+                    <td className={styles.td}>
+                      {lesson.homework_url ? (
+                        <a 
+                          href={`${API_URL}${lesson.homework_url}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={styles.fileLink}
+                        >
+                          Переглянути
+                        </a>
+                      ) : (
+                        '-'
+                      )}
+                    </td>
                     <td className={styles.td}>
                       <span className={`${styles.statusBadge} ${
                         lesson.status === 'completed' ? styles.statusCompleted :

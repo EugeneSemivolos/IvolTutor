@@ -4,7 +4,7 @@ import uuid
 from typing import List
 from datetime import datetime
 
-from fastapi import FastAPI, Depends, HTTPException, File, UploadFile
+from fastapi import FastAPI, Depends, HTTPException, File, UploadFile, Form
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from sqlmodel import Session, select
@@ -43,24 +43,52 @@ def on_startup():
     init_db()
 
 @app.post("/upload/")
-async def upload_file(files: list[UploadFile] = File(...)):
-    """Handle multiple file uploads"""
+async def upload_file(
+    files: list[UploadFile] = File(...),
+    student_slug: str = Form(...),
+    lesson_date: str = Form(...)
+):
+    """Handle multiple file uploads with structured storage"""
     if not files:
         raise HTTPException(status_code=400, detail="No files provided")
     
     uploaded_urls = []
     
+    # Створюємо структуру папок: uploads/student_slug/lesson_date/
+    student_dir = os.path.join(UPLOAD_DIR, student_slug)
+    lesson_dir = os.path.join(student_dir, lesson_date)
+    
+    # Створюємо папки якщо не існують
+    os.makedirs(lesson_dir, exist_ok=True)
+    
+    # Визначаємо які типи файлів ми отримали
+    file_index = 0
     for file in files:
         if file and file.filename:
             file_extension = os.path.splitext(file.filename)[1]
-            unique_filename = f"{uuid.uuid4()}{file_extension}"
-            file_path = os.path.join(UPLOAD_DIR, unique_filename)
+            
+            # Визначаємо назву файлу
+            if len(files) == 1:
+                file_type = "ДЗ"  # Якщо один файл - це завжди домашнє завдання
+            elif file_index == 0:
+                file_type = "Матеріал"  # Перший файл - матеріал
+            else:
+                file_type = "ДЗ"  # Другий файл - домашнє завдання
+            
+            structured_filename = f"{file_type}_{lesson_date}{file_extension}"
+            file_path = os.path.join(lesson_dir, structured_filename)
+            
             try:
                 with open(file_path, "wb") as buffer:
                     shutil.copyfileobj(file.file, buffer)
-                uploaded_urls.append(f"/uploads/{unique_filename}")
+                
+                # Повертаємо відносний шлях від uploads
+                relative_path = f"/uploads/{student_slug}/{lesson_date}/{structured_filename}"
+                uploaded_urls.append(relative_path)
             except Exception as e:
                 raise HTTPException(status_code=500, detail=f"Failed to save file: {str(e)}")
+            
+            file_index += 1
     
     return {"files": uploaded_urls}
 

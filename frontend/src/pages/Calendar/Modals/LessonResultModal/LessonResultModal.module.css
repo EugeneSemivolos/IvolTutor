@@ -94,6 +94,13 @@
   font-weight: 500;
 }
 
+.paste_hint {
+  margin-top: 6px;
+  font-size: 0.8rem;
+  color: #6b7280;
+  font-style: italic;
+}
+
 .error {
   background-color: #FEE2E2;
   color: #B91C1C;
@@ -193,6 +200,10 @@
 
 :global(.dark) .detailValue {
   color: #f3f4f6;
+}
+
+:global(.dark) .paste_hint {
+  color: #9ca3af;
 }
 
 :global(.dark) .error {

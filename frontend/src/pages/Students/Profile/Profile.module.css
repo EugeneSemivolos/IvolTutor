@@ -221,6 +221,19 @@
   color: #374151;
 }
 
+.fileLink {
+  color: #3b82f6;
+  text-decoration: none;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.fileLink:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+
 .tr:hover {
   background-color: #f9fafb;
 }
@@ -314,6 +327,14 @@
 :global(.dark) .td {
   border-bottom-color: #374151;
   color: #d1d5db;
+}
+
+:global(.dark) .fileLink {
+  color: #60a5fa;
+}
+
+:global(.dark) .fileLink:hover {
+  color: #93c5fd;
 }
 
 :global(.dark) .tr:hover {
