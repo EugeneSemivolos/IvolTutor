@@ -7,6 +7,20 @@ import PaymentModal from '../Modals/PaymentModal';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
+const STATUS_CONFIG = {
+  completed: { label: 'Проведено', style: 'statusCompleted' },
+  cancelled: { label: 'Скасовано', style: 'statusCancelled' },
+  no_show: { label: 'Не прийшов', style: 'statusNoshow' },
+  planned: { label: 'Заплановано', style: 'statusPlanned' }
+};
+
+// Розрахунок списаної ціни
+const getChargedPrice = (lesson) => {
+  if (lesson.status === 'completed') return lesson.price;
+  if (lesson.status === 'no_show') return lesson.price * 0.5;
+  return 0;
+};
+
 export default function StudentProfile() {
   const { slug } = useParams();
   const navigate = useNavigate();
@@ -101,17 +115,6 @@ export default function StudentProfile() {
     fetchData(offset);
   };
 
-  // Функція для розрахунку списаної ціни залежно від статусу
-  const getChargedPrice = (lesson) => {
-    if (lesson.status === 'completed') {
-      return lesson.price; // 100% ціни
-    } else if (lesson.status === 'no_show') {
-      return lesson.price * 0.5; // 50% ціни
-    } else {
-      return 0; // cancelled, planned - не списано
-    }
-  };
-
   // Обробка збереження змін
   const handleUpdateStudent = async (formData) => {
     try {
@@ -159,7 +162,7 @@ export default function StudentProfile() {
       {/* Картка студента */}
       <div className={styles.card}>
         <div className={styles.cardHeader}>
-          <div style={{display: 'flex', alignItems: 'center', gap: '1rem'}}>
+          <div className={styles.headerLeft}>
             <div>
               <h1 className={styles.studentName}>{student.full_name}</h1>
               <p className={styles.parentName}>
@@ -170,10 +173,8 @@ export default function StudentProfile() {
             {/* Кнопка редагування (олівець) */}
             <button 
               onClick={() => setIsEditModalOpen(true)}
-              className={styles.edit}
+              className={styles.editBtn}
               title="Редагувати профіль"
-              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.05)'}
-              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
@@ -225,7 +226,7 @@ export default function StudentProfile() {
         {/* Коментар окремим блоком знизу */}
         <div className={styles.commentSection}>
           <span className={styles.detailLabel}>Коментар</span>
-          <div className={styles.detailValue} style={{ whiteSpace: 'pre-wrap', marginTop: '0.25rem' }}>
+          <div className={styles.commentValue}>
             {student.comment || '-'}
           </div>
         </div>
@@ -253,8 +254,8 @@ export default function StudentProfile() {
                 {lessons.map(lesson => (
                   <tr key={lesson.id} className={styles.tr}>
                     <td className={styles.td}>
-                      <div style={{fontWeight: 500}}>{new Date(lesson.start_time).toLocaleDateString('uk-UA')}</div>
-                      <div style={{fontSize: '0.75rem', color: '#9ca3af'}}>
+                      <div className={styles.dateMain}>{new Date(lesson.start_time).toLocaleDateString('uk-UA')}</div>
+                      <div className={styles.dateTime}>
                         {new Date(lesson.start_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                       </div>
                     </td>
@@ -288,16 +289,8 @@ export default function StudentProfile() {
                       )}
                     </td>
                     <td className={styles.td}>
-                      <span className={`${styles.statusBadge} ${
-                        lesson.status === 'completed' ? styles.statusCompleted :
-                        lesson.status === 'cancelled' ? styles.statusCancelled :
-                        lesson.status === 'no_show' ? styles.statusNoshow :
-                        styles.statusPlanned
-                      }`}>
-                        {lesson.status === 'completed' ? 'Проведено' : 
-                         lesson.status === 'cancelled' ? 'Скасовано' :
-                         lesson.status === 'no_show' ? 'Не прийшов' :
-                         'Заплановано'}
+                      <span className={`${styles.statusBadge} ${styles[STATUS_CONFIG[lesson.status]?.style || 'statusPlanned']}`}>
+                        {STATUS_CONFIG[lesson.status]?.label || lesson.status}
                       </span>
                     </td>
                     <td className={styles.td}>{getChargedPrice(lesson)} грн</td>
@@ -309,7 +302,7 @@ export default function StudentProfile() {
         )}
         
         {hasMore && (
-          <div style={{display: 'flex', justifyContent: 'center', marginTop: '1.5rem'}}>
+          <div className={styles.loadMoreWrapper}>
             <button 
               onClick={handleLoadMore}
               className={styles.loadMoreBtn}
@@ -341,13 +334,13 @@ export default function StudentProfile() {
                 {payments.map(payment => (
                   <tr key={payment.id} className={styles.tr}>
                     <td className={styles.td}>
-                      <div style={{fontWeight: 500}}>{new Date(payment.date).toLocaleDateString('uk-UA')}</div>
+                      <div className={styles.dateMain}>{new Date(payment.date).toLocaleDateString('uk-UA')}</div>
                     </td>
                     <td className={styles.td}>
                       {payment.payment_time || new Date(payment.date).toLocaleTimeString('uk-UA', {hour: '2-digit', minute:'2-digit', hour12: false})}
                     </td>
                     <td className={styles.td}>
-                      <span style={{color: '#10b981', fontWeight: 500}}>+{payment.amount} грн</span>
+                      <span className={styles.paymentAmount}>+{payment.amount} грн</span>
                     </td>
                     <td className={styles.td}>{payment.comment || '—'}</td>
                   </tr>
@@ -358,7 +351,7 @@ export default function StudentProfile() {
         )}
         
         {hasMorePayments && (
-          <div style={{display: 'flex', justifyContent: 'center', marginTop: '1.5rem'}}>
+          <div className={styles.loadMoreWrapper}>
             <button 
               onClick={fetchMorePayments}
               className={styles.loadMoreBtn}

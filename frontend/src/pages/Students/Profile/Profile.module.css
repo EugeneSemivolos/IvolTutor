@@ -44,6 +44,12 @@
   gap: 1rem;
 }
 
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
 @media (min-width: 640px) {
   .cardHeader {
     flex-direction: row;
@@ -182,7 +188,7 @@
   overflow: hidden;
 }
 
-.edit {
+.editBtn {
   background: none;
   border: none;
   cursor: pointer;
@@ -193,6 +199,18 @@
   align-items: center;
   justify-content: center;
   transition: background 0.2s;
+}
+
+.editBtn:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+:global(.dark) .editBtn {
+  color: #9ca3af;
+}
+
+:global(.dark) .editBtn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 .tableWrapper {
@@ -270,6 +288,33 @@
   padding: 2.5rem;
   text-align: center;
   color: #6b7280;
+}
+
+.commentValue {
+  font-weight: 500;
+  color: #1f2937;
+  white-space: pre-wrap;
+  margin-top: 0.25rem;
+}
+
+.dateMain {
+  font-weight: 500;
+}
+
+.dateTime {
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
+.paymentAmount {
+  color: #10b981;
+  font-weight: 500;
+}
+
+.loadMoreWrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.5rem;
 }
 
 
@@ -363,6 +408,18 @@
 
 :global(.dark) .emptyState {
   color: #9ca3af;
+}
+
+:global(.dark) .commentValue {
+  color: #f3f4f6;
+}
+
+:global(.dark) .dateTime {
+  color: #6b7280;
+}
+
+:global(.dark) .paymentAmount {
+  color: #34d399;
 }
 
 .loadMoreBtn {
