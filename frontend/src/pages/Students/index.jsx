@@ -12,6 +12,8 @@ export default function StudentsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [selectedStudentForPayment, setSelectedStudentForPayment] = useState(null);
+  const [sortField, setSortField] = useState('full_name');
+  const [sortDirection, setSortDirection] = useState('asc');
   const navigate = useNavigate();
 
   const fetchStudents = async () => {
@@ -26,6 +28,65 @@ export default function StudentsPage() {
   useEffect(() => {
     fetchStudents();
   }, []);
+
+  // Функція для сортування студентів
+  const getSortedStudents = () => {
+    const sorted = [...students].sort((a, b) => {
+      let aValue = a[sortField];
+      let bValue = b[sortField];
+
+      // Обробка null/undefined значень
+      if (aValue == null) aValue = '';
+      if (bValue == null) bValue = '';
+
+      // Сортування для чисел
+      if (typeof aValue === 'number' && typeof bValue === 'number') {
+        return sortDirection === 'asc' ? aValue - bValue : bValue - aValue;
+      }
+
+      // Сортування для рядків
+      if (typeof aValue === 'string' && typeof bValue === 'string') {
+        aValue = aValue.toLowerCase();
+        bValue = bValue.toLowerCase();
+        return sortDirection === 'asc' 
+          ? aValue.localeCompare(bValue, 'uk-UA')
+          : bValue.localeCompare(aValue, 'uk-UA');
+      }
+
+      return 0;
+    });
+    return sorted;
+  };
+
+  // Функція для зміни сортування
+  const handleSort = (field) => {
+    if (sortField === field) {
+      // Якщо натиснули на той же стовпець, то змінюємо напрямок
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      // Якщо натиснули на новий стовпець, то сортуємо по зростанню
+      setSortField(field);
+      setSortDirection('asc');
+    }
+  };
+
+  // Функція для отримання індикатора сортування
+  const getSortIndicator = (field) => {
+    if (sortField !== field) return ' ▲';
+    return sortDirection === 'asc' ? ' ▲' : ' ▼';
+  };
+
+  // Стиль для заголовків з зарезервованим місцем для стрілки
+  const thStyle = {
+    cursor: 'pointer',
+    userSelect: 'none',
+    minWidth: 'fit-content'
+  };
+
+  // Стиль для стрілки при неактивному заголовку
+  const getIndicatorStyle = (field) => {
+    return sortField === field ? {} : { opacity: 0 };
+  };
 
   const handleCreateStudent = async (formData) => {
     try {
@@ -65,14 +126,45 @@ export default function StudentsPage() {
             <table className={styles.table}>
             <thead>
                 <tr>
-                  <th className={styles.th}>Ім'я</th>
-                  <th className={styles.th}>Контакти</th>
-                  <th className={styles.th}>Тариф</th>
-                  <th className={styles.th}>Баланс</th>
+                  <th 
+                    className={styles.th}
+                    onClick={() => handleSort('full_name')}
+                    style={thStyle}
+                  >
+                    Ім'я<span style={getIndicatorStyle('full_name')}>{getSortIndicator('full_name')}</span>
+                  </th>
+                  <th 
+                    className={styles.th}
+                    onClick={() => handleSort('grade')}
+                    style={thStyle}
+                  >
+                    Клас<span style={getIndicatorStyle('grade')}>{getSortIndicator('grade')}</span>
+                  </th>
+                  <th 
+                    className={styles.th}
+                    onClick={() => handleSort('telegram_contact')}
+                    style={thStyle}
+                  >
+                    Контакти<span style={getIndicatorStyle('telegram_contact')}>{getSortIndicator('telegram_contact')}</span>
+                  </th>
+                  <th 
+                    className={styles.th}
+                    onClick={() => handleSort('default_price')}
+                    style={thStyle}
+                  >
+                    Тариф<span style={getIndicatorStyle('default_price')}>{getSortIndicator('default_price')}</span>
+                  </th>
+                  <th 
+                    className={styles.th}
+                    onClick={() => handleSort('balance')}
+                    style={thStyle}
+                  >
+                    Баланс<span style={getIndicatorStyle('balance')}>{getSortIndicator('balance')}</span>
+                  </th>
                 </tr>
             </thead>
             <tbody>
-                {students.map(s => (
+                {getSortedStudents().map(s => (
                 <tr 
                     key={s.id} 
                     className={styles.tr}
@@ -82,6 +174,7 @@ export default function StudentsPage() {
                         <div style={{fontWeight: 500, fontSize: '1rem'}}>{s.full_name}</div>
                         {s.parent_name && <div style={{fontSize: '0.75rem', color: '#9ca3af'}}>Батьки: {s.parent_name}</div>}
                     </td>
+                    <td className={styles.td}>{s.grade || '—'}</td>
                     <td className={styles.td}>{s.telegram_contact || '—'}</td>
                     <td className={styles.td}>{s.default_price} грн</td>
                     <td className={styles.td}>

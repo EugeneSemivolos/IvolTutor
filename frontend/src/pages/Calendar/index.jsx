@@ -309,10 +309,10 @@ export default function Calendar() {
         eventContent={(arg) => {
           return (
             <div style={{ padding: '4px 8px', overflow: 'hidden' }}>
-              <div style={{ fontWeight: 'bold', fontSize: '1.2em' }}>
+              <div style={{ fontWeight: 'bold', fontSize: '1em' }}>
                 {arg.event.title}
               </div>
-              <div style={{ fontSize: '1em', opacity: 0.9 }}>
+              <div style={{ fontSize: '0.9em', opacity: 0.9 }}>
                 {arg.event.extendedProps.displayTime}
               </div>
             </div>
