@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
-import styles from './PaymentModal.module.css';
+import styles from '../shared/Modal.module.css';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
@@ -12,7 +12,6 @@ export default function PaymentModal({ isOpen, onClose, onSuccess, preselectedSt
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState(null);
 
-  // Встановлюємо поточний час при відкритті модалі
   useEffect(() => {
     if (isOpen && !paymentTime) {
       const now = new Date();
@@ -26,12 +25,12 @@ export default function PaymentModal({ isOpen, onClose, onSuccess, preselectedSt
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!studentId) {
       setErrorMsg('Виберіть студента');
       return;
     }
-    
+
     if (!amount || parseFloat(amount) <= 0) {
       setErrorMsg('Введіть суму більше за 0');
       return;
@@ -66,28 +65,23 @@ export default function PaymentModal({ isOpen, onClose, onSuccess, preselectedSt
 
   return (
     <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.modal} onClick={e => e.stopPropagation()}>
+      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
         <h2 className={styles.title}>Внесення платежу</h2>
 
-        {errorMsg && (
-          <div className={styles.error}>
-            {errorMsg}
-          </div>
-        )}
+        {errorMsg && <div className={styles.error}>{errorMsg}</div>}
 
         <form onSubmit={handleSubmit} className={styles.form}>
-          {/* Студент */}
           {!preselectedStudentId && (
             <div className={styles.formGroup}>
               <label className={styles.label}>Студент</label>
               <select
-                className={styles.input}
+                className={styles.select}
                 value={studentId}
                 onChange={(e) => setStudentId(e.target.value)}
                 required
               >
                 <option value="">Оберіть студента...</option>
-                {students.map(student => (
+                {students.map((student) => (
                   <option key={student.id} value={student.id}>
                     {student.full_name}
                   </option>
@@ -96,7 +90,6 @@ export default function PaymentModal({ isOpen, onClose, onSuccess, preselectedSt
             </div>
           )}
 
-          {/* Сума */}
           <div className={styles.formGroup}>
             <label className={styles.label}>Сума (грн)</label>
             <input
@@ -110,7 +103,6 @@ export default function PaymentModal({ isOpen, onClose, onSuccess, preselectedSt
             />
           </div>
 
-          {/* Час сплати */}
           <div className={styles.formGroup}>
             <label className={styles.label}>Час сплати (опціонально)</label>
             <input
@@ -121,7 +113,6 @@ export default function PaymentModal({ isOpen, onClose, onSuccess, preselectedSt
             />
           </div>
 
-          {/* Коментар */}
           <div className={styles.formGroup}>
             <label className={styles.label}>Коментар (опціонально)</label>
             <textarea
@@ -133,8 +124,7 @@ export default function PaymentModal({ isOpen, onClose, onSuccess, preselectedSt
             />
           </div>
 
-          {/* Кнопки */}
-          <div className={styles.buttons}>
+          <div className={styles.actions}>
             <button
               type="button"
               onClick={onClose}
@@ -145,7 +135,7 @@ export default function PaymentModal({ isOpen, onClose, onSuccess, preselectedSt
             </button>
             <button
               type="submit"
-              className={`${styles.btn} ${styles.btnSave}`}
+              className={`${styles.btn} ${styles.btnSuccess}`}
               disabled={isLoading}
             >
               {isLoading ? 'Збереження...' : 'Зберегти'}
