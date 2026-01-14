@@ -3,11 +3,19 @@ import { Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Calendar from './pages/Calendar';
 import Help from './pages/Help';
+import Welcome from './pages/Welcome';
 
 import StudentsPage from './pages/Students';
 import StudentProfile from './pages/Students/Profile';
 
 function App() {
+  // TODO: Add authentication logic here
+  const isAuthenticated = false; // This should be replaced with actual auth state
+
+  if (!isAuthenticated) {
+    return <Welcome />;
+  }
+
   return (
     <>
       <Navbar />
