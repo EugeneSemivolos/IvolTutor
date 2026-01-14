@@ -11,6 +11,33 @@ def generate_slug(full_name: str) -> str:
     slug = re.sub(r'[-\s]+', '-', slug)   # Replace spaces/hyphens with single hyphen
     return slug
 
+
+# --- 0. КОРИСТУВАЧІ (USERS) ---
+class UserBase(SQLModel):
+    email: str = Field(unique=True, index=True)
+    name: str
+
+class User(UserBase, table=True):
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    hashed_password: str
+    is_active: bool = Field(default=True)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone(timedelta(hours=2))))
+
+class UserCreate(UserBase):
+    password: str
+
+class UserLogin(SQLModel):
+    email: str
+    password: str
+
+class Token(SQLModel):
+    access_token: str
+    token_type: str
+
+class TokenData(SQLModel):
+    email: Optional[str] = None
+
+
 # --- 1. УЧНІ (STUDENTS) ---
 class StudentBase(SQLModel):
     full_name: str
