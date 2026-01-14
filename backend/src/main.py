@@ -183,7 +183,9 @@ def read_students(
     session: Session = Depends(get_session),
     current_user: User = Depends(get_current_active_user)
 ):
-    students = session.exec(select(Student)).all()
+    # Повертаємо тільки студентів поточного користувача
+    statement = select(Student).where(Student.user_id == current_user.id)
+    students = session.exec(statement).all()
     return students
 
 @app.post("/students/", response_model=Student)
@@ -192,9 +194,10 @@ def create_student(
     session: Session = Depends(get_session),
     current_user: User = Depends(get_current_active_user)
 ):
-    # construct Student from incoming data (avoid pydantic v2-only methods)
+    # Створюємо студента з прив'язкою до поточного користувача
     student_data = student_in.dict()
     student_data['slug'] = generate_slug(student_data['full_name'])
+    student_data['user_id'] = current_user.id  # Додаємо ID користувача
     student = Student(**student_data)
     session.add(student)
     session.commit()
@@ -212,6 +215,10 @@ def update_student(
     if not student:
         raise HTTPException(status_code=404, detail="Student not found")
     
+    # Перевіряємо що студент належить поточному користувачу
+    if student.user_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Access denied")
+    
     student_data = student_in.dict(exclude_unset=True)
     for key, value in student_data.items():
         setattr(student, key, value)
@@ -227,7 +234,11 @@ def read_student_by_slug(
     session: Session = Depends(get_session),
     current_user: User = Depends(get_current_active_user)
 ):
-    statement = select(Student).where(Student.slug == slug)
+    # Перевіряємо що студент належить поточному користувачу
+    statement = select(Student).where(
+        Student.slug == slug,
+        Student.user_id == current_user.id
+    )
     student = session.exec(statement).first()
     if not student:
         raise HTTPException(status_code=404, detail="Student not found")
@@ -247,7 +258,8 @@ def get_lessons(
 ):
     statement = select(Lesson).where(
         Lesson.start_time >= start,
-        Lesson.start_time <= end
+        Lesson.start_time <= end,
+        Lesson.user_id == current_user.id  # Фільтруємо по user_id
     )
     
     if student_id:
@@ -276,12 +288,19 @@ def create_lesson(
     if not student:
         raise HTTPException(status_code=404, detail="Student not found")
     
+    # Перевіряємо що студент належить поточному користувачу
+    if student.user_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Access denied")
+    
     # 2. Перевіряємо ціну
     lesson_data = lesson_in.dict()
     
     # Якщо ціна не передана, беремо default_price студента
     if lesson_data.get("price") is None:
         lesson_data["price"] = student.default_price
+    
+    # Додаємо user_id
+    lesson_data["user_id"] = current_user.id
         
     # 3. Створюємо запис
     lesson = Lesson(**lesson_data)
@@ -301,6 +320,10 @@ def update_lesson(
     lesson = session.get(Lesson, lesson_id)
     if not lesson:
         raise HTTPException(status_code=404, detail="Lesson not found")
+    
+    # Перевіряємо що урок належить поточному користувачу
+    if lesson.user_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Access denied")
     
     # Отримуємо старий статус
     old_status = lesson.status
@@ -394,8 +417,14 @@ def create_payment(
     if not student:
         raise HTTPException(status_code=404, detail="Student not found")
     
+    # Перевіряємо що студент належить поточному користувачу
+    if student.user_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Access denied")
+    
     # Створюємо платіж
-    payment = Payment(**payment_in.dict())
+    payment_data = payment_in.dict()
+    payment_data['user_id'] = current_user.id  # Додаємо user_id
+    payment = Payment(**payment_data)
     session.add(payment)
     
     # Оновлюємо баланс студента
@@ -404,6 +433,7 @@ def create_payment(
     # Створюємо транзакцію
     transaction = Transaction(
         student_id=payment_in.student_id,
+        user_id=current_user.id,  # Додаємо user_id
         amount=payment_in.amount,
         comment=payment_in.comment or "Поповнення балансу"
     )
@@ -424,7 +454,8 @@ def get_student_payments(
 ):
     """Отримати платежи студента з пагінацією"""
     statement = select(Payment).where(
-        Payment.student_id == student_id
+        Payment.student_id == student_id,
+        Payment.user_id == current_user.id  # Фільтруємо по user_id
     ).order_by(Payment.date.desc()).offset(skip).limit(limit)
     payments = session.exec(statement).all()
     return payments

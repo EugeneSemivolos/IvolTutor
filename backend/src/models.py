@@ -49,8 +49,9 @@ class StudentBase(SQLModel):
 
 class Student(StudentBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
-    slug: str = Field(index=True, unique=True)  # URL-safe name for linking
+    slug: str = Field(index=True)  # URL-safe name for linking
     balance: float = Field(default=0.0)
+    user_id: uuid.UUID = Field(foreign_key="user.id", index=True)  # Власник студента
     lessons: List["Lesson"] = Relationship(back_populates="student")
     transactions: List["Transaction"] = Relationship(back_populates="student")
     payments: List["Payment"] = Relationship(back_populates="student")
@@ -98,7 +99,8 @@ class LessonUpdate(SQLModel):
 # Модель БД (ціна обов'язкова)
 class Lesson(LessonBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
-    price: float 
+    price: float
+    user_id: uuid.UUID = Field(foreign_key="user.id", index=True)  # Власник уроку
     
     student: Optional[Student] = Relationship(back_populates="lessons")
     homeworks: List["Homework"] = Relationship(back_populates="lesson")
@@ -108,6 +110,7 @@ class Lesson(LessonBase, table=True):
 class Transaction(SQLModel, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     student_id: uuid.UUID = Field(foreign_key="student.id")
+    user_id: uuid.UUID = Field(foreign_key="user.id", index=True)  # Власник транзакції
     amount: float
     date: datetime = Field(default_factory=datetime.utcnow)
     comment: Optional[str] = None
@@ -123,6 +126,7 @@ class PaymentBase(SQLModel):
 class Payment(PaymentBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     student_id: uuid.UUID = Field(foreign_key="student.id")
+    user_id: uuid.UUID = Field(foreign_key="user.id", index=True)  # Власник платежу
     date: datetime = Field(default_factory=lambda: datetime.now(timezone(timedelta(hours=2))))
     student: Optional[Student] = Relationship(back_populates="payments")
 
