@@ -1,7 +1,7 @@
 import os
 import uuid
 from typing import List
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from fastapi import FastAPI, Depends, HTTPException, File, UploadFile, Form
 from fastapi.middleware.cors import CORSMiddleware
@@ -13,10 +13,18 @@ from .database import init_db, get_session
 from .models import (
     Student, StudentCreate, StudentUpdate, 
     Lesson, LessonCreate, LessonUpdate, 
-    Transaction, Payment, PaymentCreate, generate_slug
+    Transaction, Payment, PaymentCreate, generate_slug,
+    User, UserCreate, UserLogin, Token
 )
 from .services.billing import apply_status_change
 from .services.uploads import enforce_upload_constraints, save_file, validate_extension
+from .services.auth import (
+    get_password_hash, 
+    authenticate_user, 
+    create_access_token,
+    get_current_active_user,
+    ACCESS_TOKEN_EXPIRE_MINUTES
+)
 
 app = FastAPI(title="Tutor CRM API")
 
@@ -43,11 +51,84 @@ app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 def on_startup():
     init_db()
 
+
+# ==================== AUTH ENDPOINTS ====================
+
+@app.post("/auth/signup", response_model=Token)
+def signup(user_in: UserCreate, session: Session = Depends(get_session)):
+    """Реєстрація нового користувача"""
+    # Перевіряємо, чи існує користувач з таким email
+    statement = select(User).where(User.email == user_in.email)
+    existing_user = session.exec(statement).first()
+    
+    if existing_user:
+        raise HTTPException(
+            status_code=400,
+            detail="User with this email already exists"
+        )
+    
+    # Створюємо нового користувача
+    hashed_password = get_password_hash(user_in.password)
+    user = User(
+        email=user_in.email,
+        name=user_in.name,
+        hashed_password=hashed_password
+    )
+    
+    session.add(user)
+    session.commit()
+    session.refresh(user)
+    
+    # Створюємо токен
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": user.email}, expires_delta=access_token_expires
+    )
+    
+    return Token(access_token=access_token, token_type="bearer")
+
+
+@app.post("/auth/login", response_model=Token)
+def login(user_credentials: UserLogin, session: Session = Depends(get_session)):
+    """Вхід користувача"""
+    user = authenticate_user(user_credentials.email, user_credentials.password, session)
+    
+    if not user:
+        raise HTTPException(
+            status_code=401,
+            detail="Incorrect email or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    # Створюємо токен
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": user.email}, expires_delta=access_token_expires
+    )
+    
+    return Token(access_token=access_token, token_type="bearer")
+
+
+@app.get("/auth/me")
+def get_me(current_user: User = Depends(get_current_active_user)):
+    """Отримати інформацію про поточного користувача"""
+    return {
+        "id": str(current_user.id),
+        "email": current_user.email,
+        "name": current_user.name,
+        "is_active": current_user.is_active,
+        "created_at": current_user.created_at
+    }
+
+
+# ==================== FILE UPLOAD ====================
+
 @app.post("/upload/")
 async def upload_file(
     files: list[UploadFile] = File(...),
     student_slug: str = Form(...),
-    lesson_date: str = Form(...)
+    lesson_date: str = Form(...),
+    current_user: User = Depends(get_current_active_user)
 ):
     """Handle multiple file uploads with structured storage"""
     if not files:
@@ -98,12 +179,19 @@ def read_root():
 
 # --- STUDENTS ---
 @app.get("/students/", response_model=List[Student])
-def read_students(session: Session = Depends(get_session)):
+def read_students(
+    session: Session = Depends(get_session),
+    current_user: User = Depends(get_current_active_user)
+):
     students = session.exec(select(Student)).all()
     return students
 
 @app.post("/students/", response_model=Student)
-def create_student(student_in: StudentCreate, session: Session = Depends(get_session)):
+def create_student(
+    student_in: StudentCreate, 
+    session: Session = Depends(get_session),
+    current_user: User = Depends(get_current_active_user)
+):
     # construct Student from incoming data (avoid pydantic v2-only methods)
     student_data = student_in.dict()
     student_data['slug'] = generate_slug(student_data['full_name'])
@@ -114,7 +202,12 @@ def create_student(student_in: StudentCreate, session: Session = Depends(get_ses
     return student
 
 @app.patch("/students/{student_id}", response_model=Student)
-def update_student(student_id: uuid.UUID, student_in: StudentUpdate, session: Session = Depends(get_session)):
+def update_student(
+    student_id: uuid.UUID, 
+    student_in: StudentUpdate, 
+    session: Session = Depends(get_session),
+    current_user: User = Depends(get_current_active_user)
+):
     student = session.get(Student, student_id)
     if not student:
         raise HTTPException(status_code=404, detail="Student not found")
@@ -129,7 +222,11 @@ def update_student(student_id: uuid.UUID, student_in: StudentUpdate, session: Se
     return student
 
 @app.get("/students/{slug}", response_model=Student)
-def read_student_by_slug(slug: str, session: Session = Depends(get_session)):
+def read_student_by_slug(
+    slug: str, 
+    session: Session = Depends(get_session),
+    current_user: User = Depends(get_current_active_user)
+):
     statement = select(Student).where(Student.slug == slug)
     student = session.exec(statement).first()
     if not student:
@@ -145,7 +242,8 @@ def get_lessons(
     status: str | None = None,
     skip: int = 0,
     limit: int = 100,
-    session: Session = Depends(get_session)
+    session: Session = Depends(get_session),
+    current_user: User = Depends(get_current_active_user)
 ):
     statement = select(Lesson).where(
         Lesson.start_time >= start,
@@ -168,7 +266,11 @@ def get_lessons(
 
 # Використовує LessonCreate та підставляє ціну
 @app.post("/lessons/", response_model=Lesson)
-def create_lesson(lesson_in: LessonCreate, session: Session = Depends(get_session)):
+def create_lesson(
+    lesson_in: LessonCreate, 
+    session: Session = Depends(get_session),
+    current_user: User = Depends(get_current_active_user)
+):
     # 1. Знаходимо студента
     student = session.get(Student, lesson_in.student_id)
     if not student:
@@ -193,7 +295,8 @@ def create_lesson(lesson_in: LessonCreate, session: Session = Depends(get_sessio
 def update_lesson(
     lesson_id: uuid.UUID, 
     lesson_in: LessonUpdate,
-    session: Session = Depends(get_session)
+    session: Session = Depends(get_session),
+    current_user: User = Depends(get_current_active_user)
 ):
     lesson = session.get(Lesson, lesson_id)
     if not lesson:
@@ -222,7 +325,8 @@ def update_lesson(
 def update_lesson_series(
     lesson_id: uuid.UUID, 
     lesson_in: LessonUpdate, 
-    session: Session = Depends(get_session)
+    session: Session = Depends(get_session),
+    current_user: User = Depends(get_current_active_user)
 ):
     """Оновити всі заняття серії, починаючи з поточного"""
     # Отримуємо поточний урок
@@ -279,7 +383,11 @@ def update_lesson_series(
 
 # --- ПЛАТЕЖИ ---
 @app.post("/payments/", response_model=Payment)
-def create_payment(payment_in: PaymentCreate, session: Session = Depends(get_session)):
+def create_payment(
+    payment_in: PaymentCreate, 
+    session: Session = Depends(get_session),
+    current_user: User = Depends(get_current_active_user)
+):
     """Створити платіж і оновити баланс студента"""
     # Перевіряємо, чи існує студент
     student = session.get(Student, payment_in.student_id)
@@ -311,7 +419,8 @@ def get_student_payments(
     student_id: uuid.UUID, 
     skip: int = 0,
     limit: int = 100,
-    session: Session = Depends(get_session)
+    session: Session = Depends(get_session),
+    current_user: User = Depends(get_current_active_user)
 ):
     """Отримати платежи студента з пагінацією"""
     statement = select(Payment).where(
