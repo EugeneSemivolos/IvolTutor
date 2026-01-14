@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 import styles from './Welcome.module.css';
 
 function Welcome() {
@@ -9,16 +11,42 @@ function Welcome() {
     name: '',
     confirmPassword: ''
   });
+  const [validationError, setValidationError] = useState('');
+  const { login, signup, error, loading } = useAuth();
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    if (isLogin) {
-      // TODO: Implement login logic
-      console.log('Login:', { email: formData.email, password: formData.password });
-    } else {
-      // TODO: Implement signup logic
-      console.log('Signup:', formData);
+    setValidationError('');
+
+    try {
+      if (isLogin) {
+        const success = await login(formData.email, formData.password);
+        if (success) {
+          navigate('/');
+        }
+      } else {
+        // Валідація пароля
+        if (formData.password !== formData.confirmPassword) {
+          setValidationError('Паролі не збігаються');
+          return;
+        }
+        if (formData.password.length < 6) {
+          setValidationError('Пароль має бути не менше 6 символів');
+          return;
+        }
+
+        const success = await signup(
+          formData.email,
+          formData.password,
+          formData.name
+        );
+        if (success) {
+          navigate('/');
+        }
+      }
+    } catch (err) {
+      setValidationError('Невідома помилка');
     }
   };
 
@@ -27,6 +55,7 @@ function Welcome() {
       ...formData,
       [e.target.name]: e.target.value
     });
+    setValidationError('');
   };
 
   const toggleMode = () => {
@@ -37,7 +66,10 @@ function Welcome() {
       name: '',
       confirmPassword: ''
     });
+    setValidationError('');
   };
+
+  const displayError = error || validationError;
 
   return (
     <div className={styles.container}>
@@ -69,6 +101,12 @@ function Welcome() {
           <h2 className={styles.formTitle}>
             {isLogin ? 'Вхід' : 'Реєстрація'}
           </h2>
+          
+          {displayError && (
+            <div className={styles.errorMessage}>
+              {displayError}
+            </div>
+          )}
           
           <form onSubmit={handleSubmit} className={styles.form}>
             {!isLogin && (
@@ -139,8 +177,8 @@ function Welcome() {
               </div>
             )}
 
-            <button type="submit" className={styles.submitButton}>
-              {isLogin ? 'Увійти' : 'Зареєструватися'}
+            <button type="submit" className={styles.submitButton} disabled={loading}>
+              {loading ? 'Завантаження...' : (isLogin ? 'Увійти' : 'Зареєструватися')}
             </button>
           </form>
 

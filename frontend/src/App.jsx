@@ -1,4 +1,5 @@
 import { Routes, Route } from 'react-router-dom';
+import { useAuth } from './contexts/AuthContext';
 
 import Navbar from './components/Navbar';
 import Calendar from './pages/Calendar';
@@ -9,13 +10,30 @@ import StudentsPage from './pages/Students';
 import StudentProfile from './pages/Students/Profile';
 
 function App() {
-  // TODO: Add authentication logic here
-  const isAuthenticated = false; // This should be replaced with actual auth state
+  const { isAuthenticated, loading } = useAuth();
 
+  // Показуємо loading state під час ініціалізації
+  if (loading) {
+    return (
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+        backgroundColor: 'var(--cal-bg)',
+        color: 'var(--cal-text)'
+      }}>
+        <div>Завантаження...</div>
+      </div>
+    );
+  }
+
+  // Якщо не авторизований, показуємо Welcome page
   if (!isAuthenticated) {
     return <Welcome />;
   }
 
+  // Якщо авторизований, показуємо основний додаток
   return (
     <>
       <Navbar />
@@ -34,7 +52,7 @@ function App() {
           <Route path="/" element={<Calendar />} />
           <Route path="/help" element={<Help />} />
           
-          {/* 2. Додаємо маршрути для студентів */}
+          {/* Маршрути для студентів */}
           <Route path="/students" element={<StudentsPage />} />
           <Route path="/students/:slug" element={<StudentProfile />} />
         </Routes>
