@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 import StudentModal from './Modals/StudentModal';
 import PaymentModal from './Modals/PaymentModal';
 import styles from './Students.module.css';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-
 export default function StudentsPage() {
+  const { apiClient } = useAuth();
   const [students, setStudents] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
@@ -18,7 +17,7 @@ export default function StudentsPage() {
 
   const fetchStudents = async () => {
     try {
-      const res = await axios.get(`${API_URL}/students/`);
+      const res = await apiClient.get('/students/');
       setStudents(res.data);
     } catch (e) {
       console.error("Error loading students:", e);
@@ -27,7 +26,7 @@ export default function StudentsPage() {
 
   useEffect(() => {
     fetchStudents();
-  }, []);
+  }, [apiClient]);
 
   // Функція для сортування студентів
   const getSortedStudents = () => {
@@ -90,7 +89,7 @@ export default function StudentsPage() {
 
   const handleCreateStudent = async (formData) => {
     try {
-      await axios.post(`${API_URL}/students/`, formData);
+      await apiClient.post('/students/', formData);
       setIsModalOpen(false);
       fetchStudents();
     } catch (e) {

@@ -68,13 +68,13 @@ export function AuthProvider({ children }) {
       });
 
       const { access_token } = response.data;
+      
+      // Спочатку зберігаємо токен
       localStorage.setItem('access_token', access_token);
       setToken(access_token);
 
-      // Отримуємо дані про користувача
-      const userResponse = await apiClient.get('/auth/me', {
-        headers: { Authorization: `Bearer ${access_token}` },
-      });
+      // Отримуємо дані про користувача з новим токеном
+      const userResponse = await apiClient.get('/auth/me');
 
       const userData = userResponse.data;
       localStorage.setItem('user', JSON.stringify(userData));
@@ -101,13 +101,13 @@ export function AuthProvider({ children }) {
       });
 
       const { access_token } = response.data;
+      
+      // Спочатку зберігаємо токен
       localStorage.setItem('access_token', access_token);
       setToken(access_token);
 
-      // Отримуємо дані про користувача
-      const userResponse = await apiClient.get('/auth/me', {
-        headers: { Authorization: `Bearer ${access_token}` },
-      });
+      // Отримуємо дані про користувача з новим токеном
+      const userResponse = await apiClient.get('/auth/me');
 
       const userData = userResponse.data;
       localStorage.setItem('user', JSON.stringify(userData));

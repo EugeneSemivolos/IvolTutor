@@ -1,12 +1,10 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import axios from 'axios';
+import { useAuth } from '../../contexts/AuthContext';
 import CalendarView from './components/CalendarView';
 import LessonModal from './Modals/LessonModal';
 import LessonResultModal from './Modals/LessonResultModal';
 import SeriesEditModal from './Modals/SeriesEditModal';
 import PaymentModal from '../Students/Modals/PaymentModal';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 const EVENT_COLORS = {
   planned: '#4F46E5',
@@ -17,6 +15,7 @@ const EVENT_COLORS = {
 };
 
 export default function Calendar() {
+  const { apiClient } = useAuth();
   const [students, setStudents] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRange, setSelectedRange] = useState(null);
@@ -36,10 +35,10 @@ export default function Calendar() {
     const controller = new AbortController();
     const fetchStudents = async () => {
       try {
-        const res = await axios.get(`${API_URL}/students/`, { signal: controller.signal });
+        const res = await apiClient.get('/students/', { signal: controller.signal });
         setStudents(res.data);
       } catch (e) {
-        if (!axios.isCancel(e)) {
+        if (e.name !== 'CanceledError') {
           console.error('Не вдалося завантажити студентів', e);
           setErrorMsg('Не вдалося завантажити список студентів.');
         }
@@ -47,7 +46,7 @@ export default function Calendar() {
     };
     fetchStudents();
     return () => controller.abort();
-  }, []);
+  }, [apiClient]);
 
   // Форматування дати в локальний ISO
   const formatLocalISO = (date) => {
@@ -60,7 +59,7 @@ export default function Calendar() {
   // Джерело подій для календаря
   const fetchEventsSource = useCallback(async (fetchInfo, successCallback, failureCallback) => {
     try {
-      const response = await axios.get(`${API_URL}/lessons/`, {
+      const response = await apiClient.get('/lessons/', {
         params: {
           start: fetchInfo.startStr,
           end: fetchInfo.endStr,
@@ -111,7 +110,7 @@ export default function Calendar() {
       failureCallback(error);
       setErrorMsg('Помилка завантаження розкладу.');
     }
-  }, [students]);
+  }, [apiClient, students]);
 
   const handleDateSelect = (selectInfo) => {
     setSelectedRange(selectInfo);
@@ -132,7 +131,7 @@ export default function Calendar() {
     const newEnd = formatLocalISO(info.event.end);
 
     try {
-      await axios.patch(`${API_URL}/lessons/${lessonId}`, {
+      await apiClient.patch(`/lessons/${lessonId}`, {
         start_time: newStart,
         end_time: newEnd
       });
@@ -161,7 +160,7 @@ export default function Calendar() {
         series_id: null
       };
 
-      await axios.patch(`${API_URL}/lessons/${editingLesson.id}`, updateData);
+      await apiClient.patch(`/lessons/${editingLesson.id}`, updateData);
       calendarRef.current?.getApi().refetchEvents();
     } catch (error) {
       console.error('Помилка оновлення заняття:', error);
@@ -185,7 +184,7 @@ export default function Calendar() {
         topic: pendingFormData.topic
       };
 
-      await axios.patch(`${API_URL}/lessons/series/${editingLesson.id}`, updateData);
+      await apiClient.patch(`/lessons/series/${editingLesson.id}`, updateData);
       calendarRef.current?.getApi().refetchEvents();
     } catch (error) {
       console.error('Помилка оновлення серії:', error);
@@ -215,7 +214,7 @@ export default function Calendar() {
           status: formData.status
         };
 
-        await axios.patch(`${API_URL}/lessons/${editingLesson.id}`, updateData);
+        await apiClient.patch(`/lessons/${editingLesson.id}`, updateData);
       } else {
         if (formData.frequency === 'weekly' && formData.repeatUntil) {
           const startDate = new Date(formData.start_time);
@@ -241,7 +240,7 @@ export default function Calendar() {
             currentEnd.setDate(currentEnd.getDate() + 7);
           }
 
-          await Promise.all(lessons.map((lesson) => axios.post(`${API_URL}/lessons/`, lesson)));
+          await Promise.all(lessons.map((lesson) => apiClient.post('/lessons/', lesson)));
         } else {
           const newLesson = {
             student_id: formData.student_id,
@@ -250,7 +249,7 @@ export default function Calendar() {
             topic: formData.topic,
             status: 'planned'
           };
-          await axios.post(`${API_URL}/lessons/`, newLesson);
+          await apiClient.post('/lessons/', newLesson);
         }
       }
 
@@ -276,7 +275,7 @@ export default function Calendar() {
     }
 
     try {
-      await axios.patch(`${API_URL}/lessons/${editingLesson.id}`, { status: newStatus });
+      await apiClient.patch(`/lessons/${editingLesson.id}`, { status: newStatus });
       handleCloseModal();
       calendarRef.current?.getApi().refetchEvents();
     } catch (error) {
