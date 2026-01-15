@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import ThemeToggle from '../../components/Navbar/ThemeToggle';
 import styles from './Welcome.module.css';
 
 function Welcome() {
@@ -31,8 +32,8 @@ function Welcome() {
           setValidationError('Паролі не збігаються');
           return;
         }
-        if (formData.password.length < 6) {
-          setValidationError('Пароль має бути не менше 6 символів');
+        if (formData.password.length < 8) {
+          setValidationError('Пароль має бути не менше 8 символів');
           return;
         }
 
@@ -73,6 +74,9 @@ function Welcome() {
 
   return (
     <div className={styles.container}>
+      <div className={styles.themeToggleWrap}>
+        <ThemeToggle />
+      </div>
       <div className={styles.welcomeSection}>
         <div className={styles.welcomeContent}>
           <h1 className={styles.title}>IvolTutor</h1>

@@ -26,6 +26,14 @@
   opacity: 0.3;
 }
 
+/* Theme toggle wrapper positioned in top-right of the hero */
+.themeToggleWrap {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 2;
+}
+
 .welcomeContent {
   position: relative;
   z-index: 1;
